@@ -1,0 +1,204 @@
+body {
+    font-family: Hauss, sans-serif; 
+}
+
+#app {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+}
+
+#sudoku-board {
+    width: 500px;
+    height: 500px;
+    border: 2.5px solid #344861;
+    display: flex;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+}
+
+.board-cell {
+    width: 55px;
+    height: 55px;
+    border: none;
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+    background-color: white;
+    border: 0.5px solid #94a3b7;
+    color: #344861
+}
+
+.board-cell {
+    border-bottom: none; 
+    border-left: none;
+}
+
+.board-cell:nth-child(-n+9) {
+    border-top: none;
+}
+
+.board-cell:nth-child(9n) {
+    border-right: none;
+}
+
+.board-cell:nth-child(n+28):nth-child(-n+36) {
+    border-top: 2.5px solid #344861;
+}
+
+.board-cell:nth-child(n+55):nth-child(-n+63){
+    border-top: 2.5px solid #344861;
+}
+
+.board-cell:nth-child(9n + 3) {
+    border-right: 2.5px solid #344861;
+}
+
+.board-cell:nth-child(9n + 6) {
+    border-right: 2.5px solid #344861;
+}
+
+#controls-buttons {
+    width: 320px;
+    height: 500px;
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+#timer-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+#timer-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.timer-text {
+    color: #6e7c8c;
+    font-weight: 500;
+}
+
+#timer-label {
+    font-size: 13px;
+    letter-spacing: .22px;
+    line-height: 1.23;
+    margin: 0 0 1px;
+}
+
+#timer-span {
+    font-size: 15px;
+    line-height: 1.33;
+}
+
+#timer-button {
+    background-color: #eaeef4;
+    height: 30px;
+    width: 30px;
+    margin-left: 4px;
+    padding: 0px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#timer-button svg {
+    color: #94a3b7;
+    width: 65%;
+    position: relative;
+    right: 1px;
+}
+
+.btn-icon {
+    height: 12px;
+    width: 11px;
+}
+
+#game-control-buttons {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    margin-top: 19px;
+    margin-bottom: 8px;
+    padding: 0 2.5%;
+}
+
+.game-control-button {
+    width: 60px;
+    height: 60px;
+    padding: 0px;
+    margin: 0px;
+    background-color: #eaeef4;
+    border: 2px solid #eaeef4;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.game-control-button svg {
+    height: 100%;
+    width: 55%;
+}
+
+#numpad {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex: 1 0 auto;
+    width: 100%;
+}
+
+.numpad-item {
+    background-color: #eaeef4;
+    flex-basis: 32%;
+    color: #325aaf;
+    cursor: pointer;
+    font-size: 42px;
+    font-weight: 400;
+    line-height: 42px;
+    margin: 1%;
+    padding: 0px;
+    border: 0;
+    border-radius: 5px;
+}
+
+.numpad-item:first-child, .numpad-item:nth-child(2), .numpad-item:nth-child(3) {
+    margin-top: 0;
+}
+
+.numpad-item:nth-child(7), .numpad-item:nth-child(8), .numpad-item:nth-child(9) {
+    margin-bottom: 0;
+}
+
+.numpad-item:nth-child(3n-2) {
+    margin-left: 0;
+}
+
+.numpad-item:nth-child(3n) {
+    margin-right: 0;
+}
+
+#new-game-button {
+    height: 60px;
+    margin-top: 8px;
+    padding: 0 24px;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 5px;
+    background-color: #5a7bc0;
+    color: #fff;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 500;
+}
