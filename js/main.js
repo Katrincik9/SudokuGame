@@ -70,7 +70,16 @@ controlsButtons.appendChild(newGameBtn)
 for (let i=0; i<9; i++){
     const numpadItem = document.createElement("button");
     numpadItem.classList.add("numpad-item");
-    numpadItem.id = "numpad-item-" + i;
+    numpadItem.id = i;
     numpadItem.innerText = i + 1;
     numpad.append(numpadItem);
+}
+
+for (let r=0; r<9; r++) {
+    for (let c=0; c<9; c++) {
+        const cell = document.createElement("button");
+        cell.classList.add("board-cell");
+        cell.id = r.toString() + c.toString()
+        board.appendChild(cell);
+    }
 }
