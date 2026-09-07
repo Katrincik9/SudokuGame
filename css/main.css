@@ -14,6 +14,8 @@
     --buttonsBackgroundColor : #eaeef4;
     --gridDarkBorder : #344861;
     --gridLightBorder : #94a3b7;
+    --hoverBtn : #dce3ed;
+    --activeBtn : #d2dae7;
 }
 
 body {
@@ -146,6 +148,14 @@ body {
     width: 65%;
 }
 
+.game-control-button:hover {
+    background-color: var(--hoverBtn);
+}
+
+.game-control-button:active {
+    background-color: var(--activeBtn);
+}
+
 #numpad {
     display: flex;
     flex-wrap: wrap;
@@ -165,11 +175,11 @@ body {
 }
 
 .numpad-item:hover {
-    background-color: #dce3ed;
+    background-color: var(--hoverBtn);
 }
 
 .numpad-item:active {
-    background-color: #d2dae7;
+    background-color: var(--activeBtn);
 }
 
 .numpad-item:first-child, .numpad-item:nth-child(2), .numpad-item:nth-child(3) {

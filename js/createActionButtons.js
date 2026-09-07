@@ -1,17 +1,23 @@
 import { undoIcon, eraseIcon, notesIcon } from "./icons.js";
+import { eraseCell } from "./eraseCell.js";
+import { toggleNotes } from "./toggleNotes.js";
+import { undoStep } from "./undoStep.js";
 
 const buttons = [
     {
         id: "undo-button",
         icon: undoIcon,
+        function: undoStep,
     },
     {
         id: "erase-button",
         icon: eraseIcon,
+        function: eraseCell,
     },
     {
         id: "notes-button",
         icon: notesIcon,
+        function: toggleNotes,
     }
 ];
 
@@ -22,6 +28,7 @@ export function createActionButtons(controlsButtons) {
 
     buttons.forEach((button) => {
         const actionBtn = createButton(button.id, button.icon);
+        actionBtn.addEventListener("click", (event) => {button.function(event.currentTarget)})
         gameControlsButtons.appendChild(actionBtn);
     });
 }
