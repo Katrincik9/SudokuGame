@@ -1,4 +1,5 @@
 import generatedPuzzleGrid from "./board.js"
+import { chooseCell } from "./chooseCell.js";
 
 export function createGrid(app) {
     const board = document.createElement("div");
@@ -12,7 +13,9 @@ export function createGrid(app) {
             cell.id = row.toString() + column.toString();
             if (generatedPuzzleGrid[row][column] !== ".") {
                 cell.innerText = generatedPuzzleGrid[row][column];
+                cell.classList.add("fixed");
             }
+            cell.addEventListener("click", (event) => chooseCell(event.target))
             board.appendChild(cell);
         }
     }
