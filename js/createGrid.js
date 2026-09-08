@@ -4,6 +4,7 @@ import { chooseCell } from "./chooseCell.js";
 export function createGrid(app) {
     const board = document.createElement("div");
     board.id = "sudoku-board";
+    board.addEventListener("click", (event) => chooseCell(event.target))
     app.appendChild(board);
 
     for (let row=0; row<9; row++) {
@@ -15,7 +16,6 @@ export function createGrid(app) {
                 cell.innerText = generatedPuzzleGrid[row][column];
                 cell.classList.add("fixed");
             }
-            cell.addEventListener("click", (event) => chooseCell(event.target))
             board.appendChild(cell);
         }
     }
