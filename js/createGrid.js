@@ -1,5 +1,7 @@
-import generatedPuzzleGrid from "./board.js"
-import { chooseCell } from "./chooseCell.js";
+import { chooseCell } from "./changeCell.js";
+
+const generatedPuzzle = window.sudoku.generate("hard");
+const generatedPuzzleGrid = window.sudoku.board_string_to_grid(generatedPuzzle);
 
 export function createGrid(app) {
     const board = document.createElement("div");

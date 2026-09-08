@@ -1,4 +1,4 @@
-export let history = []
+let history = []
 
 export function addToHistory(id, oldValue, newValue) {
     history.push({
