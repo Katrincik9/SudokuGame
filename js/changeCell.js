@@ -15,30 +15,32 @@ export function chooseCell(cell) {
 export function chooseNumber(button) {
     selectedButton = button.id; 
 
-    if (selectedCell.classList.contains("fixed")) {
+    if (!selectedCell || selectedCell.classList.contains("fixed")) {
         return; 
+    } else if (selectedCell.innerText === selectedButton) {
+        updateCell(selectedCell, "")
     } else {
-        const oldValue = selectedCell.innerText;
-        selectedCell.innerText = selectedButton;
-        const newValue = selectedCell.innerText;
-        
-        addToHistory(selectedCell.id, oldValue, newValue)
+        updateCell(selectedCell, selectedButton)
     }
 }
 
-export function eraseCell(cell) {
-    console.log(cell);
-    console.log(selectedCell);
-    
-    if (selectedCell.innerText === "" || selectedCell.classList.contains("fixed")) {
+function updateCell(cell, newValue) {
+    const oldValue = cell.innerText;
+    cell.innerText = newValue;
+    if (newValue === "") {
+        cell.classList.remove("changed")
+    } else {
+        cell.classList.add("changed")
+    }
+    addToHistory(cell.id, oldValue, newValue)
+}
+
+export function eraseCell() {
+    if (!selectedCell || selectedCell.innerText === "" || selectedCell.classList.contains("fixed")) {
         return;
     }
 
-    const oldValue = selectedCell.innerText;
-    selectedCell.innerText = "";
-    const newValue = selectedCell.innerText;
-    
-    addToHistory(selectedCell.id, oldValue, newValue)
+    updateCell(selectedCell, "")
 }
 
 export function toggleNotes() {

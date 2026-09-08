@@ -49,6 +49,10 @@ body {
     color: #325aaf;
 }
 
+.board-cell.changed {
+    color: #325aaf;
+}
+
 .board-cell:nth-child(-n+9) {
     border-top: none;
 }
