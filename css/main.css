@@ -44,6 +44,10 @@ body {
     font-size: 38px;
 }
 
+.board-cell.highlighted {
+    background-color: #e2ebf3;
+}
+
 .board-cell.selected {
     background-color: #bbdefb;
     color: #325aaf;
