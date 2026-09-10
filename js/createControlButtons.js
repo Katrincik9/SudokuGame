@@ -1,5 +1,5 @@
 import { pauseIcon, undoIcon, eraseIcon, notesIcon } from "./icons.js";
-import { eraseCell, toggleNotes, undoStep, chooseNumber } from "./changeCell.js";
+import { eraseCell, toggleNotesMode, undoStep, chooseNumber } from "./changeCell.js";
 
 export function createControlButtons(app) {
     const controlsButtons = document.createElement("div");
@@ -58,7 +58,7 @@ const buttons = [
     {
         id: "notes-button",
         icon: notesIcon,
-        function: toggleNotes,
+        function: toggleNotesMode,
     }
 ];
 
@@ -86,7 +86,7 @@ function createButton(id, icon) {
 function createNumpad(controlsButtons) {
     const numpad = document.createElement("div");
     numpad.id = "numpad";
-    numpad.addEventListener("click", (event) => {chooseNumber(event.target)})
+    numpad.addEventListener("click", (event) => {chooseNumber(event.target)}) 
     controlsButtons.appendChild(numpad);
 
     for (let index=0; index<9; index++){

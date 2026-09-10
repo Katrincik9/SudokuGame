@@ -1,13 +1,11 @@
 @font-face {
     font-family: "Hauss";
     src: url(../fonts/als_hauss_book.826f31c6.woff2) format("woff2");
-    font-weight: 400;
 }
 
 @font-face {
     font-family: "Hauss-Bold";
     src: url(../fonts/als_hauss_medium.woff2) format("woff2");
-    font-weight: 500;
 }
 
 :root {
@@ -16,6 +14,7 @@
     --gridLightBorder : #94a3b7;
     --hoverBtn : #dce3ed;
     --activeBtn : #d2dae7;
+    --numberColor: #325aaf;
 }
 
 body {
@@ -32,6 +31,29 @@ body {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
     text-align: center;
+    position: relative;
+}
+
+#sudoku-board::after {
+    content: "";
+    width: 33%;
+    border-left: 2.5px solid var(--gridDarkBorder); 
+    border-right: 2.5px solid var(--gridDarkBorder);    
+    position: absolute;
+    height: 100%;
+    left: 163px;   
+    pointer-events: none;
+}
+
+#sudoku-board::before {
+    content: "";
+    height: 33%;
+    border-top: 2.5px solid var(--gridDarkBorder); 
+    border-bottom: 2.5px solid var(--gridDarkBorder);    
+    position: absolute;
+    width: 100%;
+    top: 163px;
+    pointer-events: none;
 }
 
 .board-cell {
@@ -44,17 +66,20 @@ body {
     font-size: 38px;
 }
 
+.board-cell > div {
+    pointer-events: none;
+}
+
 .board-cell.highlighted {
     background-color: #e2ebf3;
 }
 
 .board-cell.selected {
     background-color: #bbdefb;
-    color: #325aaf;
 }
 
-.board-cell.changed {
-    color: #325aaf;
+.cell-value.changed {
+    color: var(--numberColor);
 }
 
 .board-cell:nth-child(-n+9) {
@@ -65,20 +90,24 @@ body {
     border-right: none;
 }
 
-.board-cell:nth-child(n+28):nth-child(-n+36) {
-    border-top: 2.5px solid var(--gridDarkBorder);
+.notes.no-display {
+    display: none;
 }
 
-.board-cell:nth-child(n+55):nth-child(-n+63){
-    border-top: 2.5px solid var(--gridDarkBorder);
+.cell-value.no-display {
+    display: none;
 }
 
-.board-cell:nth-child(9n + 3) {
-    border-right: 2.5px solid var(--gridDarkBorder);
+.notes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 4px;
 }
 
-.board-cell:nth-child(9n + 6) {
-    border-right: 2.5px solid var(--gridDarkBorder);
+.note {
+    color: #6e7c8c;
+    font-size: 12px;
 }
 
 #controls-buttons {
@@ -146,7 +175,7 @@ body {
     width: 60px;
     height: 60px;
     background-color: var(--buttonsBackgroundColor);
-    border: none;
+    border: 2px solid var(--buttonsBackgroundColor);
     border-radius: 50%;
     cursor: pointer;
 }
@@ -158,10 +187,47 @@ body {
 
 .game-control-button:hover {
     background-color: var(--hoverBtn);
+    border-color: var(--hoverBtn);
 }
 
 .game-control-button:active {
     background-color: var(--activeBtn);
+    border-color: var(--activeBtn);
+}
+
+#notes-button {
+    position: relative;
+}
+
+#notes-button::after {
+    content: "OFF";
+    background-color: #adb6c2;
+    font-family: "Hauss-Bold", sans-serif;
+    color:#fff;
+    position: absolute;
+    border-radius: 50px;
+    top: -5%;
+    left: 65%;
+    width: 30px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#notes-button.notes-on {
+    border: 2px solid var(--numberColor);
+}
+
+#notes-button.notes-on:hover {
+    background-color: var(--buttonsBackgroundColor);
+}
+
+#notes-button.notes-on::after {
+    content: "ON";
+    background-color: var(--numberColor);
 }
 
 #numpad {
@@ -173,7 +239,7 @@ body {
 .numpad-item {
     background-color: var(--buttonsBackgroundColor);
     flex-basis: 32%;
-    color: #325aaf;
+    color: var(--numberColor);
     cursor: pointer;
     font-size: 42px;
     margin: 1%;

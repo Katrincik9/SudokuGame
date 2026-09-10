@@ -1,13 +1,17 @@
-import { addToHistory } from "./history.js";
+import { addValueToHistory, addNotesToHistory} from "./history.js";
 
 let selectedCell = null;
-let selectedButton = null;
+let notesOn = false; 
 
 export function chooseCell(cell) {
     let cells = document.querySelectorAll(".board-cell")
     cells.forEach((cell) => {
         cell.classList.remove("highlighted")
     })
+
+    if (!cell.classList.contains("board-cell")) {
+        return;
+    }
 
     if (selectedCell !== null) {
         selectedCell.classList.remove("selected");
@@ -22,8 +26,8 @@ function highlightCells(cells, selectedCell) {
     let id = selectedCell.id.split("")
     let selectedRow = id[0]
     let selectedColumn = id[1]
-    let startRow = Math.floor(selectedRow / 3) * 3    
-    let startColumn = Math.floor(selectedColumn / 3) * 3
+    let boxRow = Math.floor(selectedRow / 3) * 3
+    let boxColumn = Math.floor(selectedColumn / 3) * 3
 
     cells.forEach((cell) => {
         let currentRow = cell.id[0]
@@ -33,45 +37,97 @@ function highlightCells(cells, selectedCell) {
             cell.classList.add("highlighted")
         }
 
-        if (currentRow >= startRow && currentRow < startRow + 3 && currentColumn >= startColumn && currentColumn < startColumn + 3) {
+        if (currentRow >= boxRow && currentRow < boxRow + 3 && currentColumn >= boxColumn && currentColumn < boxColumn + 3) {
             cell.classList.add("highlighted")
         }
     })
 }
 
 export function chooseNumber(button) {
-    selectedButton = button.id; 
+    if (!button.classList.contains("numpad-item") || !selectedCell || selectedCell.classList.contains("fixed")) {
+        return
+    } 
 
-    if (!selectedCell || selectedCell.classList.contains("fixed")) {
-        return; 
-    } else if (selectedCell.innerText === selectedButton) {
-        updateCell(selectedCell, "")
+    const number = button.id; 
+    const notes = selectedCell.querySelectorAll(".note");
+    const cellNotes = selectedCell.querySelector(".notes");
+    const cellValue = selectedCell.querySelector(".cell-value");
+
+    if (!notesOn) {
+        if (cellValue.textContent === number) {
+            updateCellValue(selectedCell, cellValue, "")
+        } else {
+            cellValue.classList.remove("no-display")
+            cellNotes.classList.add("no-display");
+            updateCellNotes(selectedCell, notes, "")
+            updateCellValue(selectedCell, cellValue, number)
+        }
     } else {
-        updateCell(selectedCell, selectedButton)
+        cellValue.classList.add("no-display");
+        updateCellValue(selectedCell, cellValue, "")
+        cellNotes.classList.remove("no-display");
+        updateCellNotes(selectedCell, notes, number) 
     }
 }
 
-function updateCell(cell, newValue) {
-    const oldValue = cell.innerText;
-    cell.innerText = newValue;
+function updateCellValue(cell, cellValue, newValue) {
+    const oldValue = cellValue.textContent;
+    cellValue.textContent = newValue;
     if (newValue === "") {
-        cell.classList.remove("changed")
+        cellValue.classList.remove("changed")
     } else {
-        cell.classList.add("changed")
+        cellValue.classList.add("changed")
     }
-    addToHistory(cell.id, oldValue, newValue)
+    
+    addValueToHistory(cell.id, oldValue, newValue)
+}
+
+function updateCellNotes(cell, notes, clickedNumber) {
+    let oldNotes = []
+    notes.forEach((note) => {
+        if (note.textContent !== "") oldNotes.push(note.textContent)
+    })
+    let newNotes = [...oldNotes]
+    console.log(clickedNumber)
+        notes.forEach((note) => {
+            if (clickedNumber === "") {
+                newNotes = []
+                note.textContent = ""
+            } else {
+                if (note.id === clickedNumber) {
+                    if (note.textContent === "") {
+                        note.textContent = clickedNumber
+                        newNotes.push(note.textContent)
+                    } else {
+                        newNotes = newNotes.filter((note) => note !== clickedNumber)
+                        note.textContent = ""
+                    }
+                }
+            }
+        })
+
+    addNotesToHistory(cell.id, oldNotes, newNotes)
 }
 
 export function eraseCell() {
-    if (!selectedCell || selectedCell.innerText === "" || selectedCell.classList.contains("fixed")) {
+    if (!selectedCell || selectedCell.textContent === "" || selectedCell.classList.contains("fixed")) {
+        return;
+    }
+    
+    const valueElement = selectedCell.querySelector(".cell-value");
+    const notes = selectedCell.querySelectorAll(".note");
+
+    if (valueElement.textContent !== "") {
+        updateCellValue(selectedCell, valueElement, "");
         return;
     }
 
-    updateCell(selectedCell, "")
+    updateCellNotes(selectedCell, notes, "")
 }
 
-export function toggleNotes() {
-    
+export function toggleNotesMode(button) {
+    notesOn = !notesOn;
+    button.classList.toggle("notes-on");  
 }
 
 export function undoStep() {
