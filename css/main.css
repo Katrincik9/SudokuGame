@@ -74,6 +74,10 @@ body {
     background-color: #e2ebf3;
 }
 
+.board-cell.same-cell {
+    background-color: #c3d7ea;
+}
+
 .board-cell.selected {
     background-color: #bbdefb;
 }

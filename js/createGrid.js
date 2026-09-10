@@ -32,17 +32,17 @@ function createCell(row, column, puzzleValue) {
     const cell = document.createElement("div");
     cell.classList.add("board-cell");
     cell.id = row.toString() + column.toString();
+
+    const value = document.createElement("div");
+    value.classList.add("cell-value");
+    cell.appendChild(value);
     
     if (puzzleValue !== ".") {
-        cell.textContent = puzzleValue;
+        value.textContent = puzzleValue;
         cell.classList.add("fixed");
     } else {
         const notes = createNotes()
-        const value = document.createElement("div");
-        value.classList.add("cell-value")
-
         cell.appendChild(notes);
-        cell.appendChild(value);
     }
 
     return cell;

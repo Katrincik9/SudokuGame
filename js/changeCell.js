@@ -7,6 +7,7 @@ export function chooseCell(cell) {
     let cells = document.querySelectorAll(".board-cell")
     cells.forEach((cell) => {
         cell.classList.remove("highlighted")
+        cell.classList.remove("same-cell")
     })
 
     if (!cell.classList.contains("board-cell")) {
@@ -23,15 +24,21 @@ export function chooseCell(cell) {
 }  
 
 function highlightCells(cells, selectedCell) {
-    let id = selectedCell.id.split("")
-    let selectedRow = id[0]
-    let selectedColumn = id[1]
-    let selectedBoxRow = Math.floor(selectedRow / 3) * 3
-    let selectedBoxColumn = Math.floor(selectedColumn / 3) * 3
+    const selectedCellValue = selectedCell.querySelector(".cell-value").textContent;
+    const id = selectedCell.id.split("")
+    const selectedRow = id[0]
+    const selectedColumn = id[1]
+    const selectedBoxRow = Math.floor(selectedRow / 3) * 3
+    const selectedBoxColumn = Math.floor(selectedColumn / 3) * 3
 
     cells.forEach((cell) => {
-        let currentRow = cell.id[0]
-        let currentColumn = cell.id[1]
+        const currentCellValue = cell.querySelector(".cell-value").textContent;
+        const currentRow = cell.id[0]
+        const currentColumn = cell.id[1]
+
+        if (selectedCellValue === currentCellValue && selectedCellValue !== "") {
+            cell.classList.add("same-cell")
+        }
 
         if (currentRow === selectedRow || currentColumn === selectedColumn) {
             cell.classList.add("highlighted")
