@@ -26,8 +26,8 @@ function highlightCells(cells, selectedCell) {
     let id = selectedCell.id.split("")
     let selectedRow = id[0]
     let selectedColumn = id[1]
-    let boxRow = Math.floor(selectedRow / 3) * 3
-    let boxColumn = Math.floor(selectedColumn / 3) * 3
+    let selectedBoxRow = Math.floor(selectedRow / 3) * 3
+    let selectedBoxColumn = Math.floor(selectedColumn / 3) * 3
 
     cells.forEach((cell) => {
         let currentRow = cell.id[0]
@@ -37,7 +37,7 @@ function highlightCells(cells, selectedCell) {
             cell.classList.add("highlighted")
         }
 
-        if (currentRow >= boxRow && currentRow < boxRow + 3 && currentColumn >= boxColumn && currentColumn < boxColumn + 3) {
+        if (currentRow >= selectedBoxRow && currentRow < selectedBoxRow + 3 && currentColumn >= selectedBoxColumn && currentColumn < selectedBoxColumn + 3) {
             cell.classList.add("highlighted")
         }
     })
@@ -111,7 +111,7 @@ function updateCellNotes(cell, notes, clickedNumber) {
 }
 
 export function eraseCell() {
-    if (!selectedCell || selectedCell.textContent === "" || selectedCell.classList.contains("fixed")) {
+    if (!selectedCell || selectedCell.classList.contains("fixed")) {
         return;
     }
     
