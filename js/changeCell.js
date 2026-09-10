@@ -72,6 +72,7 @@ export function chooseNumber(button) {
 
 function updateCellValue(cell, cellValue, newValue) {
     const oldValue = cellValue.textContent;
+    if (oldValue === newValue) return;
     cellValue.textContent = newValue;
     if (newValue === "") {
         cellValue.classList.remove("changed")
@@ -88,7 +89,6 @@ function updateCellNotes(cell, notes, clickedNumber) {
         if (note.textContent !== "") oldNotes.push(note.textContent)
     })
     let newNotes = [...oldNotes]
-    console.log(clickedNumber)
         notes.forEach((note) => {
             if (clickedNumber === "") {
                 newNotes = []
@@ -106,6 +106,7 @@ function updateCellNotes(cell, notes, clickedNumber) {
             }
         })
 
+    if (oldNotes.length === newNotes.length) return;
     addNotesToHistory(cell.id, oldNotes, newNotes)
 }
 
