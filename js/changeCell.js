@@ -1,4 +1,4 @@
-import { addValueToHistory, addNotesToHistory} from "./history.js";
+import { addValueToHistory, addNotesToHistory, removeLastHistory } from "./history.js";
 
 let selectedCell = null;
 let notesOn = false; 
@@ -148,5 +148,45 @@ export function toggleNotesMode(button) {
 }
 
 export function undoStep() {
+    const lastStep = removeLastHistory();
+    if (!lastStep) return;
+    const lastStepCellId = lastStep.cell;
+    const cells = document.querySelectorAll(".board-cell");
     
+    if ("oldNotes" in lastStep) {
+        undoNotes(lastStep, lastStepCellId, cells)
+    }
+
+    if ("oldValue" in lastStep) {  
+        undoValue(lastStep, lastStepCellId, cells) 
+    }
+}
+
+function undoNotes(lastStep, lastStepCellId, cells) {
+    const lastStepNotes = lastStep.oldNotes;
+    cells.forEach((cell) => {
+        const id = cell.dataset.row + cell.dataset.column
+        if (id === lastStepCellId) {
+            const notes = cell.querySelectorAll(".note");
+            for (const note of notes) {
+                note.textContent =
+                    lastStepNotes.includes(note.id) ? note.id : "";
+            }
+            cell.dataset.mode = "notes" 
+            chooseCell(cell);
+        }    
+    })
+}
+
+function undoValue(lastStep, lastStepCellId, cells) {
+    const lastStepValue = lastStep.oldValue;
+    cells.forEach((cell) => {
+        const id = cell.dataset.row + cell.dataset.column
+        if (id === lastStepCellId) {
+            const cellValue = cell.querySelector(".cell-value");
+            cellValue.textContent = lastStepValue;
+            cell.dataset.mode = "value"
+            chooseCell(cell);
+        }     
+    })
 }

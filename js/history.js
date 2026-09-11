@@ -6,7 +6,6 @@ export function addValueToHistory(id, oldValue, newValue) {
         oldValue: oldValue,
         newValue: newValue,
     })
-    console.log(history)
 }
 
 export function addNotesToHistory(id, oldNotes, newNotes) {
@@ -15,5 +14,9 @@ export function addNotesToHistory(id, oldNotes, newNotes) {
         oldNotes: oldNotes,
         newNotes: newNotes,
     })
-    console.log(history)
+}
+
+export function removeLastHistory() {
+    let lastHistoryElement = history.pop()
+    return lastHistoryElement
 }
