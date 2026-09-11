@@ -31,8 +31,9 @@ function createBoard() {
 function createCell(row, column, puzzleValue) {
     const cell = document.createElement("div");
     cell.classList.add("board-cell");
-    cell.id = row.toString() + column.toString();
-
+    cell.dataset.row = row;
+    cell.dataset.column = column;
+    
     const value = document.createElement("div");
     value.classList.add("cell-value");
     cell.appendChild(value);

@@ -4,10 +4,9 @@ let selectedCell = null;
 let notesOn = false; 
 
 export function chooseCell(cell) {
-    let cells = document.querySelectorAll(".board-cell")
+    const cells = document.querySelectorAll(".board-cell")
     cells.forEach((cell) => {
-        cell.classList.remove("highlighted")
-        cell.classList.remove("same-cell")
+        cell.classList.remove("same-cell", "highlighted")
     })
 
     if (!cell.classList.contains("board-cell")) {
@@ -25,29 +24,30 @@ export function chooseCell(cell) {
 
 function highlightCells(cells, selectedCell) {
     const selectedCellValue = selectedCell.querySelector(".cell-value").textContent;
-    const id = selectedCell.id.split("")
-    const selectedRow = id[0]
-    const selectedColumn = id[1]
-    const selectedBoxRow = Math.floor(selectedRow / 3) * 3
-    const selectedBoxColumn = Math.floor(selectedColumn / 3) * 3
+    const selectedRow = selectedCell.dataset.row
+    const selectedColumn = selectedCell.dataset.column
+    const selectedBoxRow = Math.floor(selectedRow / 3)
+    const selectedBoxColumn = Math.floor(selectedColumn / 3)
 
-    cells.forEach((cell) => {
+    for (const cell of cells) {
+        cell.classList.remove("same-cell", "highlighted")
+        
         const currentCellValue = cell.querySelector(".cell-value").textContent;
-        const currentRow = cell.id[0]
-        const currentColumn = cell.id[1]
+        const currentRow = cell.dataset.row
+        const currentColumn = cell.dataset.column
+        const currentBoxRow = Math.floor(currentRow / 3)
+        const currentBoxColumn = Math.floor(currentColumn / 3)
 
         if (selectedCellValue === currentCellValue && selectedCellValue !== "") {
             cell.classList.add("same-cell")
         }
 
-        if (currentRow === selectedRow || currentColumn === selectedColumn) {
+        if (currentRow === selectedRow || currentColumn === selectedColumn || 
+            (currentBoxRow === selectedBoxRow && currentBoxColumn === selectedBoxColumn )) {
             cell.classList.add("highlighted")
         }
 
-        if (currentRow >= selectedBoxRow && currentRow < selectedBoxRow + 3 && currentColumn >= selectedBoxColumn && currentColumn < selectedBoxColumn + 3) {
-            cell.classList.add("highlighted")
-        }
-    })
+    }
 }
 
 export function chooseNumber(button) {
@@ -57,64 +57,73 @@ export function chooseNumber(button) {
 
     const number = button.id; 
     const notes = selectedCell.querySelectorAll(".note");
-    const cellNotes = selectedCell.querySelector(".notes");
     const cellValue = selectedCell.querySelector(".cell-value");
+    const cells = document.querySelectorAll(".board-cell")
 
     if (!notesOn) {
-        if (cellValue.textContent === number) {
-            updateCellValue(selectedCell, cellValue, "")
-        } else {
-            cellValue.classList.remove("no-display")
-            cellNotes.classList.add("no-display");
-            updateCellNotes(selectedCell, notes, "")
-            updateCellValue(selectedCell, cellValue, number)
-        }
+        enterCellValue(selectedCell, cellValue, notes, number)
     } else {
-        cellValue.classList.add("no-display");
-        updateCellValue(selectedCell, cellValue, "")
-        cellNotes.classList.remove("no-display");
-        updateCellNotes(selectedCell, notes, number) 
+        enterCellNotes(selectedCell, cellValue, notes, number)
     }
+
+    highlightCells(cells, selectedCell)
+}
+
+function enterCellValue(selectedCell, cellValue, notes, number) {
+    for (const note of notes) {
+        if (note.textContent !== "") note.textContent = ""
+    }
+    selectedCell.dataset.mode = "value"
+    if (cellValue.textContent === number) {
+        updateCellValue(selectedCell, cellValue, "")
+    } else {
+        updateCellValue(selectedCell, cellValue, number)
+    }
+}
+
+function enterCellNotes(selectedCell, cellValue, notes, number) {
+    cellValue.textContent = "";
+    selectedCell.dataset.mode = "notes"
+    updateCellNotes(selectedCell, notes, number)
 }
 
 function updateCellValue(cell, cellValue, newValue) {
+    const id = cell.dataset.row + cell.dataset.column
     const oldValue = cellValue.textContent;
-    if (oldValue === newValue) return;
     cellValue.textContent = newValue;
     if (newValue === "") {
-        cellValue.classList.remove("changed")
+        cell.classList.remove("changed")
     } else {
-        cellValue.classList.add("changed")
+        cell.classList.add("changed")
     }
     
-    addValueToHistory(cell.id, oldValue, newValue)
+    addValueToHistory(id, oldValue, newValue)
 }
 
 function updateCellNotes(cell, notes, clickedNumber) {
-    let oldNotes = []
-    notes.forEach((note) => {
-        if (note.textContent !== "") oldNotes.push(note.textContent)
-    })
+    const id = cell.dataset.row + cell.dataset.column
+    const oldNotes = [...notes].filter((note) => note.textContent !== "").map((note) => note.textContent)
     let newNotes = [...oldNotes]
-        notes.forEach((note) => {
-            if (clickedNumber === "") {
-                newNotes = []
-                note.textContent = ""
+    for (const note of notes) {
+        if (clickedNumber === "") {
+            newNotes = []
+            note.textContent = ""
+            continue;
+        }
+        
+        if (note.id === clickedNumber) {
+            if (note.textContent === "") {
+                note.textContent = clickedNumber
+                newNotes.push(note.textContent)
             } else {
-                if (note.id === clickedNumber) {
-                    if (note.textContent === "") {
-                        note.textContent = clickedNumber
-                        newNotes.push(note.textContent)
-                    } else {
-                        newNotes = newNotes.filter((note) => note !== clickedNumber)
-                        note.textContent = ""
-                    }
-                }
+                newNotes = newNotes.filter((note) => note !== clickedNumber)
+                note.textContent = ""
             }
-        })
+        }
+    }
 
     if (oldNotes.length === newNotes.length) return;
-    addNotesToHistory(cell.id, oldNotes, newNotes)
+    addNotesToHistory(id, oldNotes, newNotes)
 }
 
 export function eraseCell() {

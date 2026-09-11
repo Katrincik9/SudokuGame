@@ -94,12 +94,20 @@ body {
     border-right: none;
 }
 
-.notes.no-display {
+.board-cell[data-mode="value"] .cell-value {
+    display: block;
+}
+
+.board-cell[data-mode="value"] .notes {
     display: none;
 }
 
-.cell-value.no-display {
+.board-cell[data-mode="notes"] .cell-value {
     display: none;
+}
+
+.board-cell[data-mode="notes"] .notes {
+    display: grid;
 }
 
 .notes {
