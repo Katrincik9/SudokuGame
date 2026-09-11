@@ -61,18 +61,15 @@ export function chooseNumber(button) {
     const cells = document.querySelectorAll(".board-cell")
 
     if (!notesOn) {
-        enterCellValue(selectedCell, cellValue, notes, number)
+        enterCellValue(selectedCell, cellValue, number)
     } else {
-        enterCellNotes(selectedCell, cellValue, notes, number)
+        enterCellNotes(selectedCell, notes, number)
     }
 
     highlightCells(cells, selectedCell)
 }
 
-function enterCellValue(selectedCell, cellValue, notes, number) {
-    for (const note of notes) {
-        if (note.textContent !== "") note.textContent = ""
-    }
+function enterCellValue(selectedCell, cellValue, number) {
     selectedCell.dataset.mode = "value"
     if (cellValue.textContent === number) {
         updateCellValue(selectedCell, cellValue, "")
@@ -81,8 +78,7 @@ function enterCellValue(selectedCell, cellValue, notes, number) {
     }
 }
 
-function enterCellNotes(selectedCell, cellValue, notes, number) {
-    cellValue.textContent = "";
+function enterCellNotes(selectedCell, notes, number) {
     selectedCell.dataset.mode = "notes"
     updateCellNotes(selectedCell, notes, number)
 }
@@ -164,23 +160,32 @@ export function undoStep() {
 
 function undoNotes(lastStep, lastStepCellId, cells) {
     const lastStepNotes = lastStep.oldNotes;
-    cells.forEach((cell) => {
+    for (const cell of cells) {
         const id = cell.dataset.row + cell.dataset.column
         if (id === lastStepCellId) {
             const notes = cell.querySelectorAll(".note");
             for (const note of notes) {
-                note.textContent =
-                    lastStepNotes.includes(note.id) ? note.id : "";
+                note.textContent = lastStepNotes.includes(note.id) ? note.id : "";
             }
             cell.dataset.mode = "notes" 
             chooseCell(cell);
         }    
-    })
+    }
+
+    const isEmpty = lastStep.oldNotes.length === 0;
+    if (isEmpty) {
+        for (const cell of cells) {
+            const id = cell.dataset.row + cell.dataset.column
+            if (id === lastStepCellId) {
+                cell.dataset.mode = "value" 
+            }    
+        }
+    }
 }
 
 function undoValue(lastStep, lastStepCellId, cells) {
     const lastStepValue = lastStep.oldValue;
-    cells.forEach((cell) => {
+    for (const cell of cells) {
         const id = cell.dataset.row + cell.dataset.column
         if (id === lastStepCellId) {
             const cellValue = cell.querySelector(".cell-value");
@@ -188,5 +193,16 @@ function undoValue(lastStep, lastStepCellId, cells) {
             cell.dataset.mode = "value"
             chooseCell(cell);
         }     
-    })
+    }
+
+    const isEmpty = lastStep.oldValue === "";
+    if (isEmpty) {
+        for (const cell of cells) {
+            const id = cell.dataset.row + cell.dataset.column
+            if (id === lastStepCellId) {
+                cell.dataset.mode = "notes"
+            }     
+        }
+    }
+
 }
