@@ -1,7 +1,7 @@
 import { chooseCell } from "./changeCell.js";
 
 function generatePuzzle() {
-    const generatedPuzzle = window.sudoku.generate("hard");
+    const generatedPuzzle = window.sudoku.generate("easy");
     const generatedPuzzleGrid = window.sudoku.board_string_to_grid(generatedPuzzle);
 
     return generatedPuzzleGrid
@@ -33,8 +33,8 @@ function createCell(row, column, puzzleValue) {
     cell.classList.add("board-cell");
     cell.dataset.row = row;
     cell.dataset.column = column;
-    cell.dataset.id = cell.dataset.row + cell.dataset.column;
     cell.dataset.box = Math.floor(row / 3) * 3 + Math.floor(column / 3);
+    cell.id = cell.dataset.row + cell.dataset.column;
     
     const value = document.createElement("div");
     value.classList.add("cell-value");
@@ -44,23 +44,24 @@ function createCell(row, column, puzzleValue) {
         value.textContent = puzzleValue;
         cell.classList.add("fixed");
     } else {
-        const notes = createNotes()
-        cell.appendChild(notes);
+        const notes = createNotes(cell) 
     }
 
     return cell;
 }
 
-function createNotes() {
+function createNotes(cell) {
     const notes = document.createElement("div");
-    notes.classList.add("notes");
+    notes.classList.add("cell-notes");
 
-    for (let index=0; index<9; index++) {
+    for (let index=1; index<=9; index++) {
         const note = document.createElement("span");
-        note.id = index + 1;
+        note.id = cell.id + "-" + index;
         note.classList.add("note");
         notes.appendChild(note);
     }
+
+    cell.appendChild(notes);
 
     return notes
 }

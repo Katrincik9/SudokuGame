@@ -57,8 +57,8 @@ function checkConflicts(selectedCell) {
 }
 
 function mapConflicts(firstCell, secondCell) {
-    const firstCellId = firstCell.dataset.id;
-    const secondCellId = secondCell.dataset.id;
+    const firstCellId = firstCell.id;
+    const secondCellId = secondCell.id;
 
     if (!mapOfConflicts.has(firstCellId)) {
         mapOfConflicts.set(firstCellId, []);
@@ -78,7 +78,7 @@ function mapConflicts(firstCell, secondCell) {
 }
 
 function removeConflicts(cell) {    
-    const id = cell.dataset.id;
+    const id = cell.id;
     const cellsInConflicts = mapOfConflicts.get(id);
     if (!cellsInConflicts) {
         return;
@@ -91,7 +91,7 @@ function removeConflicts(cell) {
         } 
 
         if (conflicts.length === 0) {
-            const noConflictCell = document.querySelector(`.board-cell[data-id='${conflictedCell}']`);
+            const noConflictCell = document.getElementById(`${conflictedCell}`);
             noConflictCell.classList.remove("conflict");
             mapOfConflicts.delete(conflictedCell);
         }
@@ -145,7 +145,7 @@ function updateCellValue(cell, cellValue, newValue) {
 
     removeConflicts(cell);
     checkConflicts(cell);
-    addValueToHistory(cell.dataset.id, oldValue, newValue)
+    addValueToHistory(cell.id, oldValue, newValue)
 }
 
 function updateCellNotes(cell, notes, clickedNumber) {
@@ -158,7 +158,7 @@ function updateCellNotes(cell, notes, clickedNumber) {
             continue;
         }
         
-        if (note.id === clickedNumber) {
+        if (note.id.split("-")[1] === clickedNumber) {
             if (note.textContent === "") {
                 note.textContent = clickedNumber
                 newNotes.push(note.textContent)
@@ -170,7 +170,7 @@ function updateCellNotes(cell, notes, clickedNumber) {
     }
 
     if (oldNotes.length === newNotes.length) return;
-    addNotesToHistory(cell.dataset.id, oldNotes, newNotes)
+    addNotesToHistory(cell.id, oldNotes, newNotes)
 }
 
 export function eraseCell() {
@@ -198,7 +198,7 @@ export function undoStep() {
     const lastStep = removeLastHistory();
     if (!lastStep) return;
     const lastStepCellId = lastStep.cell;
-    const cell = document.querySelector(`.board-cell[data-id='${lastStepCellId}']`)
+    const cell = document.getElementById(`${lastStepCellId}`)
     
     if ("oldNotes" in lastStep) {
         undoNotes(lastStep, cell)
@@ -213,7 +213,7 @@ function undoNotes(lastStep, cell) {
     const lastStepNotes = lastStep.oldNotes;
     const notes = cell.querySelectorAll(".note");
     for (const note of notes) {
-        note.textContent = lastStepNotes.includes(note.id) ? note.id : "";
+        note.textContent = lastStepNotes.includes(note.id.split("-")[1]) ? note.id.split("-")[1] : "";
     }
     cell.dataset.mode = "notes" 
     chooseCell(cell);
