@@ -82,8 +82,16 @@ body {
     background-color: #bbdefb;
 }
 
-.cell-value.changed {
-    color: var(--numberColor);
+.board-cell.changed.conflict{
+    color: #e55c6c;
+}
+
+.board-cell.selected.conflict {
+    background-color: #bbdefb;
+}
+
+.board-cell.conflict {
+    background-color: #f7cfd6;
 }
 
 .board-cell:nth-child(-n+9) {
@@ -108,6 +116,10 @@ body {
 
 .board-cell[data-mode="notes"] .notes {
     display: grid;
+}
+
+.cell-value {
+    height: 100%;
 }
 
 .notes {

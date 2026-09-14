@@ -2,6 +2,7 @@ import { addValueToHistory, addNotesToHistory, removeLastHistory } from "./histo
 
 let selectedCell = null;
 let notesOn = false; 
+const mapOfConflicts = new Map();
 
 export function chooseCell(cell) {
     if (!cell.classList.contains("board-cell")) {
@@ -36,6 +37,70 @@ function highlightCells(selectedCell) {
         }
     }
 }
+
+function checkConflicts(selectedCell) {
+    const changedCellValue = selectedCell.querySelector(".cell-value").textContent;
+    const { row, column, box } = selectedCell.dataset;
+    const rowCells = document.querySelectorAll(`.board-cell[data-row='${row}']`);
+    const columnCells = document.querySelectorAll(`.board-cell[data-column='${column}']`);
+    const boxCells = document.querySelectorAll(`.board-cell[data-box='${box}']`);
+    const setOfCells = new Set([...rowCells, ...columnCells, ...boxCells]);
+
+    for (const cell of setOfCells) {
+        const cellValue = cell.querySelector(".cell-value").textContent;
+        if (cellValue === changedCellValue && cell !== selectedCell && cellValue !== "") {
+            mapConflicts(selectedCell, cell);
+            cell.classList.add("conflict");
+            selectedCell.classList.add("conflict");
+        }
+    }
+}
+
+function mapConflicts(firstCell, secondCell) {
+    const firstCellId = firstCell.dataset.id;
+    const secondCellId = secondCell.dataset.id;
+
+    if (!mapOfConflicts.has(firstCellId)) {
+        mapOfConflicts.set(firstCellId, []);
+    }
+
+    if (!mapOfConflicts.has(secondCellId)) {
+        mapOfConflicts.set(secondCellId, []);
+    }
+
+    if (!mapOfConflicts.get(firstCellId).includes(secondCellId)) {
+        mapOfConflicts.get(firstCellId).push(secondCellId);
+    }
+
+    if (!mapOfConflicts.get(secondCellId).includes(firstCellId)) {
+        mapOfConflicts.get(secondCellId).push(firstCellId);
+    }
+}
+
+function removeConflicts(cell) {    
+    const id = cell.dataset.id;
+    const cellsInConflicts = mapOfConflicts.get(id);
+    if (!cellsInConflicts) {
+        return;
+    }
+
+    for (let conflictedCell of cellsInConflicts) {
+        const conflicts = mapOfConflicts.get(conflictedCell);
+        if (conflicts.includes(id)) {
+            conflicts.splice(conflicts.indexOf(id), 1);
+        } 
+
+        if (conflicts.length === 0) {
+            const noConflictCell = document.querySelector(`.board-cell[data-id='${conflictedCell}']`);
+            noConflictCell.classList.remove("conflict");
+            mapOfConflicts.delete(conflictedCell);
+        }
+    }
+
+    mapOfConflicts.delete(id);
+    cell.classList.remove("conflict");
+}
+
 
 export function chooseNumber(button) {
     if (!button.classList.contains("numpad-item") || !selectedCell || selectedCell.classList.contains("fixed")) {
@@ -77,7 +142,9 @@ function updateCellValue(cell, cellValue, newValue) {
     } else {
         cell.classList.add("changed")
     }
-    
+
+    removeConflicts(cell);
+    checkConflicts(cell);
     addValueToHistory(cell.dataset.id, oldValue, newValue)
 }
 
@@ -161,8 +228,15 @@ function undoValue(lastStep, cell) {
     const lastStepValue = lastStep.oldValue;
     const cellValue = cell.querySelector(".cell-value");
     cellValue.textContent = lastStepValue;
+    if (lastStepValue === "") {
+        cell.classList.remove("changed");
+    } else {
+        cell.classList.add("changed");
+    }
     cell.dataset.mode = "value"
     chooseCell(cell);
+    removeConflicts(cell);
+    checkConflicts(cell);
 
     const isEmpty = lastStep.oldValue === "";
     if (isEmpty) {
