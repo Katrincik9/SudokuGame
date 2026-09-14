@@ -1,4 +1,4 @@
-import { chooseCell } from "./changeCell.js";
+import { chooseCell } from "./cellOperations.js";
 
 function generatePuzzle() {
     const generatedPuzzle = window.sudoku.generate("easy");

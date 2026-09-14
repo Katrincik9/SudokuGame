@@ -1,5 +1,5 @@
 import { pauseIcon, undoIcon, eraseIcon, notesIcon } from "./icons.js";
-import { eraseCell, toggleNotesMode, undoStep, chooseNumber } from "./changeCell.js";
+import { eraseCell, toggleNotesMode, undoStep, chooseNumber } from "./cellOperations.js";
 
 export function createControlButtons(app) {
     const controlsButtons = document.createElement("div");

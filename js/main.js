@@ -1,5 +1,5 @@
-import { createGrid } from "./createGrid.js";
-import { createControlButtons } from "./createControlButtons.js";
+import { createGrid } from "./gridLayout.js";
+import { createControlButtons } from "./controlsLayout.js";
 
 const app = document.getElementById("app");
 
