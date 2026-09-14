@@ -33,6 +33,8 @@ function createCell(row, column, puzzleValue) {
     cell.classList.add("board-cell");
     cell.dataset.row = row;
     cell.dataset.column = column;
+    cell.dataset.id = cell.dataset.row + cell.dataset.column;
+    cell.dataset.box = Math.floor(row / 3) * 3 + Math.floor(column / 3);
     
     const value = document.createElement("div");
     value.classList.add("cell-value");

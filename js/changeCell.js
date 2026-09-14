@@ -4,11 +4,6 @@ let selectedCell = null;
 let notesOn = false; 
 
 export function chooseCell(cell) {
-    const cells = document.querySelectorAll(".board-cell")
-    cells.forEach((cell) => {
-        cell.classList.remove("same-cell", "highlighted")
-    })
-
     if (!cell.classList.contains("board-cell")) {
         return;
     }
@@ -19,34 +14,26 @@ export function chooseCell(cell) {
 
     selectedCell = cell;
     selectedCell.classList.add("selected");
-    highlightCells(cells, selectedCell);
+    highlightCells(selectedCell);
 }  
 
-function highlightCells(cells, selectedCell) {
+function highlightCells(selectedCell) {
     const selectedCellValue = selectedCell.querySelector(".cell-value").textContent;
-    const selectedRow = selectedCell.dataset.row
-    const selectedColumn = selectedCell.dataset.column
-    const selectedBoxRow = Math.floor(selectedRow / 3)
-    const selectedBoxColumn = Math.floor(selectedColumn / 3)
+    const { row : selectedRow, column : selectedColumn, box : selectedBox} = selectedCell.dataset;
+    const cells = document.querySelectorAll(".board-cell")
 
     for (const cell of cells) {
-        cell.classList.remove("same-cell", "highlighted")
-        
+        cell.classList.remove("same-value", "highlighted")
         const currentCellValue = cell.querySelector(".cell-value").textContent;
-        const currentRow = cell.dataset.row
-        const currentColumn = cell.dataset.column
-        const currentBoxRow = Math.floor(currentRow / 3)
-        const currentBoxColumn = Math.floor(currentColumn / 3)
+        const { row : currentRow, column : currentColumn, box : currentBox } = cell.dataset;
 
         if (selectedCellValue === currentCellValue && selectedCellValue !== "") {
-            cell.classList.add("same-cell")
+            cell.classList.add("same-value")
         }
 
-        if (currentRow === selectedRow || currentColumn === selectedColumn || 
-            (currentBoxRow === selectedBoxRow && currentBoxColumn === selectedBoxColumn )) {
+        if (currentRow === selectedRow || currentColumn === selectedColumn || currentBox === selectedBox) {
             cell.classList.add("highlighted")
         }
-
     }
 }
 
@@ -58,7 +45,6 @@ export function chooseNumber(button) {
     const number = button.id; 
     const notes = selectedCell.querySelectorAll(".note");
     const cellValue = selectedCell.querySelector(".cell-value");
-    const cells = document.querySelectorAll(".board-cell")
 
     if (!notesOn) {
         enterCellValue(selectedCell, cellValue, number)
@@ -66,7 +52,7 @@ export function chooseNumber(button) {
         enterCellNotes(selectedCell, notes, number)
     }
 
-    highlightCells(cells, selectedCell)
+    highlightCells(selectedCell)
 }
 
 function enterCellValue(selectedCell, cellValue, number) {
@@ -84,7 +70,6 @@ function enterCellNotes(selectedCell, notes, number) {
 }
 
 function updateCellValue(cell, cellValue, newValue) {
-    const id = cell.dataset.row + cell.dataset.column
     const oldValue = cellValue.textContent;
     cellValue.textContent = newValue;
     if (newValue === "") {
@@ -93,11 +78,10 @@ function updateCellValue(cell, cellValue, newValue) {
         cell.classList.add("changed")
     }
     
-    addValueToHistory(id, oldValue, newValue)
+    addValueToHistory(cell.dataset.id, oldValue, newValue)
 }
 
 function updateCellNotes(cell, notes, clickedNumber) {
-    const id = cell.dataset.row + cell.dataset.column
     const oldNotes = [...notes].filter((note) => note.textContent !== "").map((note) => note.textContent)
     let newNotes = [...oldNotes]
     for (const note of notes) {
@@ -119,7 +103,7 @@ function updateCellNotes(cell, notes, clickedNumber) {
     }
 
     if (oldNotes.length === newNotes.length) return;
-    addNotesToHistory(id, oldNotes, newNotes)
+    addNotesToHistory(cell.dataset.id, oldNotes, newNotes)
 }
 
 export function eraseCell() {
@@ -147,62 +131,41 @@ export function undoStep() {
     const lastStep = removeLastHistory();
     if (!lastStep) return;
     const lastStepCellId = lastStep.cell;
-    const cells = document.querySelectorAll(".board-cell");
+    const cell = document.querySelector(`.board-cell[data-id='${lastStepCellId}']`)
     
     if ("oldNotes" in lastStep) {
-        undoNotes(lastStep, lastStepCellId, cells)
+        undoNotes(lastStep, cell)
     }
 
     if ("oldValue" in lastStep) {  
-        undoValue(lastStep, lastStepCellId, cells) 
+        undoValue(lastStep, cell) 
     }
 }
 
-function undoNotes(lastStep, lastStepCellId, cells) {
+function undoNotes(lastStep, cell) {
     const lastStepNotes = lastStep.oldNotes;
-    for (const cell of cells) {
-        const id = cell.dataset.row + cell.dataset.column
-        if (id === lastStepCellId) {
-            const notes = cell.querySelectorAll(".note");
-            for (const note of notes) {
-                note.textContent = lastStepNotes.includes(note.id) ? note.id : "";
-            }
-            cell.dataset.mode = "notes" 
-            chooseCell(cell);
-        }    
+    const notes = cell.querySelectorAll(".note");
+    for (const note of notes) {
+        note.textContent = lastStepNotes.includes(note.id) ? note.id : "";
     }
+    cell.dataset.mode = "notes" 
+    chooseCell(cell);
 
     const isEmpty = lastStep.oldNotes.length === 0;
     if (isEmpty) {
-        for (const cell of cells) {
-            const id = cell.dataset.row + cell.dataset.column
-            if (id === lastStepCellId) {
-                cell.dataset.mode = "value" 
-            }    
-        }
+        cell.dataset.mode = "value"    
     }
 }
 
-function undoValue(lastStep, lastStepCellId, cells) {
+function undoValue(lastStep, cell) {
     const lastStepValue = lastStep.oldValue;
-    for (const cell of cells) {
-        const id = cell.dataset.row + cell.dataset.column
-        if (id === lastStepCellId) {
-            const cellValue = cell.querySelector(".cell-value");
-            cellValue.textContent = lastStepValue;
-            cell.dataset.mode = "value"
-            chooseCell(cell);
-        }     
-    }
+    const cellValue = cell.querySelector(".cell-value");
+    cellValue.textContent = lastStepValue;
+    cell.dataset.mode = "value"
+    chooseCell(cell);
 
     const isEmpty = lastStep.oldValue === "";
     if (isEmpty) {
-        for (const cell of cells) {
-            const id = cell.dataset.row + cell.dataset.column
-            if (id === lastStepCellId) {
-                cell.dataset.mode = "notes"
-            }     
-        }
+        cell.dataset.mode = "notes"
     }
-
 }

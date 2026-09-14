@@ -74,7 +74,7 @@ body {
     background-color: #e2ebf3;
 }
 
-.board-cell.same-cell {
+.board-cell.same-value {
     background-color: #c3d7ea;
 }
 
