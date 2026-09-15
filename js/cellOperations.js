@@ -108,13 +108,13 @@ export function chooseNumber(button) {
     } 
 
     const number = button.id; 
-    const notes = selectedCell.querySelectorAll(".note");
-    const cellValue = selectedCell.querySelector(".cell-value");
+    const selectedCellNotesElement = selectedCell.querySelectorAll(".note");
+    const selectedCellValueElement = selectedCell.querySelector(".cell-value");
 
     if (!notesOn) {
-        enterCellValue(selectedCell, cellValue, number)
+        enterCellValue(selectedCell, selectedCellValueElement, number)
     } else {
-        enterCellNotes(selectedCell, notes, number)
+        enterCellNotes(selectedCell, selectedCellNotesElement, number)
     }
 
     highlightCells(selectedCell)
@@ -170,15 +170,15 @@ export function eraseCell() {
         return;
     }
     
-    const valueElement = selectedCell.querySelector(".cell-value");
-    const notes = selectedCell.querySelectorAll(".note");
+    const cellMode = selectedCell.dataset.mode
+    const selectedCellValueElement = selectedCell.querySelector(".cell-value");
+    const selectedCellNotesElement = selectedCell.querySelectorAll(".note");
 
-    if (valueElement.textContent !== "") {
-        enterCellValue(selectedCell, valueElement, "");
-        return;
+    if (cellMode === "value") {
+        enterCellValue(selectedCell, selectedCellValueElement, "")
+    } else if (cellMode === "notes") {
+        enterCellNotes(selectedCell, selectedCellNotesElement, "")
     }
-
-    enterCellNotes(selectedCell, notes, "")
 }
 
 export function toggleNotesMode(button) {
