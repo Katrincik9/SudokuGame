@@ -1,4 +1,4 @@
-import { addValueToHistory, addNotesToHistory, removeLastHistory, getLastHistory } from "./history.js";
+import history from "./history.js";
 
 let selectedCell = null;
 let notesOn = false; 
@@ -8,6 +8,7 @@ export function resetGameState() {
     selectedCell = null;
     notesOn = false; 
     mapOfConflicts.clear();
+    history.clearHistory()
 }
 
 export function chooseCell(cell) {
@@ -146,7 +147,7 @@ function enterCellValue(selectedCell, selectedCellValueElement, number) {
     
     removeConflicts(selectedCell);
     checkConflicts(selectedCell);
-    addValueToHistory(selectedCell.id, currentCellValue, updatedCellValue)
+    history.addValueToHistory(selectedCell.id, currentCellValue, updatedCellValue)
 }
 
 function enterCellNotes(selectedCell, selectedCellNotesElement, number) {
@@ -175,7 +176,7 @@ function enterCellNotes(selectedCell, selectedCellNotesElement, number) {
     removeConflicts(selectedCell);
     checkConflicts(selectedCell);
     if (currentCellNotes.length === updatedCellNotes.length) return;
-    addNotesToHistory(selectedCell.id, currentCellNotes, updatedCellNotes)
+    history.addNotesToHistory(selectedCell.id, currentCellNotes, updatedCellNotes)
 }
 
 export function eraseCell() {
@@ -204,7 +205,7 @@ export function toggleNotesMode(button) {
 }
 
 export function undoStep() {
-    const lastStep = removeLastHistory();
+    const lastStep = history.pop();
     if (!lastStep) return;
     const cell = document.getElementById(`${lastStep.cell}`)
     
@@ -228,7 +229,7 @@ function undoNotes(lastStep, cell) {
     if (previousNotes.length > 0) {
         cell.dataset.mode = "notes";
     } else  {
-        const previousStep = getLastHistory()
+        const previousStep = history.getLastHistory()
 
         if (previousStep && previousStep.cell === lastStep.cell && previousStep.mode === "value") {
             const previousStepValue = previousStep.newValue
@@ -258,7 +259,7 @@ function undoValue(lastStep, cell) {
     if (previousValue === "") {
         cell.classList.remove("changed");
 
-        const previousStep = getLastHistory()
+        const previousStep = history.getLastHistory()
 
         if (previousStep && previousStep.cell === lastStep.cell && previousStep.mode === "notes") {
             const previousStepNotes = previousStep.newNotes

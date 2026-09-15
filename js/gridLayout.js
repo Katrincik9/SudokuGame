@@ -1,6 +1,5 @@
 import { chooseCell } from "./cellOperations.js";
 import { resetGameState } from "./cellOperations.js";
-import { clearHistory } from "./history.js";
 
 function generatePuzzle() {
     const generatedPuzzle = window.sudoku.generate("easy");
@@ -17,7 +16,6 @@ export function createNewGame() {
         populateCellWithPuzzle(cell, newPuzzle)
     } 
     resetGameState()
-    clearHistory()
 }
 
 function resetCellState(cell) {
