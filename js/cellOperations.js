@@ -120,57 +120,49 @@ export function chooseNumber(button) {
     highlightCells(selectedCell)
 }
 
-function enterCellValue(selectedCell, cellValue, number) {
-    selectedCell.dataset.mode = "value"
-    if (cellValue.textContent === number) {
-        updateCellValue(selectedCell, cellValue, "")
+function enterCellValue(selectedCell, selectedCellValueElement, number) {
+    selectedCell.dataset.mode = "value";
+    const currentCellValue  = selectedCellValueElement.textContent;
+
+    if (currentCellValue === number) {
+        selectedCellValueElement.textContent = "";
+        selectedCell.classList.remove("changed");
     } else {
-        updateCellValue(selectedCell, cellValue, number)
+        selectedCellValueElement.textContent = number;
+        selectedCell.classList.add("changed");
     }
+
+    const updatedCellValue = selectedCellValueElement.textContent
+    
+    removeConflicts(selectedCell);
+    checkConflicts(selectedCell);
+    addValueToHistory(selectedCell.id, currentCellValue, updatedCellValue)
 }
 
-function enterCellNotes(selectedCell, notes, number) {
+function enterCellNotes(selectedCell, selectedCellNotesElement, number) {
     selectedCell.dataset.mode = "notes"
-    updateCellNotes(selectedCell, notes, number)
-}
-
-function updateCellValue(cell, cellValue, newValue) {
-    const oldValue = cellValue.textContent;
-    cellValue.textContent = newValue;
-    if (newValue === "") {
-        cell.classList.remove("changed")
-    } else {
-        cell.classList.add("changed")
-    }
-
-    removeConflicts(cell);
-    checkConflicts(cell);
-    addValueToHistory(cell.id, oldValue, newValue)
-}
-
-function updateCellNotes(cell, notes, clickedNumber) {
-    const oldNotes = [...notes].filter((note) => note.textContent !== "").map((note) => note.textContent)
-    let newNotes = [...oldNotes]
-    for (const note of notes) {
-        if (clickedNumber === "") {
-            newNotes = []
+    const currentCellNotes = [...selectedCellNotesElement].filter((noteElement) => noteElement.textContent !== "").map((noteElement) => noteElement.textContent)
+    let updatedCellNotes = [...currentCellNotes]
+    for (const note of selectedCellNotesElement) {
+        if (number === "") {
+            updatedCellNotes = []
             note.textContent = ""
             continue;
         }
         
-        if (note.id.split("-")[1] === clickedNumber) {
+        if (note.id.split("-")[1] === number) {
             if (note.textContent === "") {
-                note.textContent = clickedNumber
-                newNotes.push(note.textContent)
+                note.textContent = number
+                updatedCellNotes.push(note.textContent)
             } else {
-                newNotes = newNotes.filter((note) => note !== clickedNumber)
+                updatedCellNotes = updatedCellNotes.filter((noteValue) => noteValue !== number)
                 note.textContent = ""
             }
         }
     }
 
-    if (oldNotes.length === newNotes.length) return;
-    addNotesToHistory(cell.id, oldNotes, newNotes)
+    if (currentCellNotes.length === updatedCellNotes.length) return;
+    addNotesToHistory(selectedCell.id, currentCellNotes, updatedCellNotes)
 }
 
 export function eraseCell() {
@@ -182,11 +174,11 @@ export function eraseCell() {
     const notes = selectedCell.querySelectorAll(".note");
 
     if (valueElement.textContent !== "") {
-        updateCellValue(selectedCell, valueElement, "");
+        enterCellValue(selectedCell, valueElement, "");
         return;
     }
 
-    updateCellNotes(selectedCell, notes, "")
+    enterCellNotes(selectedCell, notes, "")
 }
 
 export function toggleNotesMode(button) {
