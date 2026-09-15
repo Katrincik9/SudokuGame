@@ -107,7 +107,7 @@ export function chooseNumber(button) {
         return
     } 
 
-    const number = button.id; 
+    const number = button.id.split("-")[1]; 
     const selectedCellNotesElement = selectedCell.querySelectorAll(".note");
     const selectedCellValueElement = selectedCell.querySelector(".cell-value");
 

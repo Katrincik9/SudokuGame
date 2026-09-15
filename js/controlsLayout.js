@@ -89,11 +89,11 @@ function createNumpad(controlsButtons) {
     numpad.addEventListener("click", (event) => {chooseNumber(event.target)}) 
     controlsButtons.appendChild(numpad);
 
-    for (let index=0; index<9; index++){
+    for (let index=1; index<=9; index++){
         const numpadItem = document.createElement("button");
         numpadItem.classList.add("numpad-item");
-        numpadItem.id = index + 1;
-        numpadItem.innerText = index + 1;
+        numpadItem.id = "numpad-" + index;
+        numpadItem.innerText = index;
         numpad.append(numpadItem);
     }
 }
