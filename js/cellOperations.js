@@ -1,4 +1,4 @@
-import { addValueToHistory, addNotesToHistory, removeLastHistory } from "./history.js";
+import { addValueToHistory, addNotesToHistory, removeLastHistory, getLastHistory } from "./history.js";
 
 let selectedCell = null;
 let notesOn = false; 
@@ -112,8 +112,12 @@ export function chooseNumber(button) {
     const selectedCellValueElement = selectedCell.querySelector(".cell-value");
 
     if (!notesOn) {
+        for (const note of selectedCellNotesElement) {
+            note.textContent = ""
+        }
         enterCellValue(selectedCell, selectedCellValueElement, number)
     } else {
+        selectedCellValueElement.textContent = ""
         enterCellNotes(selectedCell, selectedCellNotesElement, number)
     }
 
@@ -150,7 +154,8 @@ function enterCellNotes(selectedCell, selectedCellNotesElement, number) {
             continue;
         }
         
-        if (note.id.split("-")[1] === number) {
+        const noteNumber = note.id.split("-")[1];
+        if (noteNumber === number) {
             if (note.textContent === "") {
                 note.textContent = number
                 updatedCellNotes.push(note.textContent)
@@ -161,6 +166,8 @@ function enterCellNotes(selectedCell, selectedCellNotesElement, number) {
         }
     }
 
+    removeConflicts(selectedCell);
+    checkConflicts(selectedCell);
     if (currentCellNotes.length === updatedCellNotes.length) return;
     addNotesToHistory(selectedCell.id, currentCellNotes, updatedCellNotes)
 }
@@ -179,6 +186,10 @@ export function eraseCell() {
     } else if (cellMode === "notes") {
         enterCellNotes(selectedCell, selectedCellNotesElement, "")
     }
+
+    highlightCells(selectedCell)
+    removeConflicts(selectedCell);
+    checkConflicts(selectedCell);
 }
 
 export function toggleNotesMode(button) {
@@ -189,49 +200,75 @@ export function toggleNotesMode(button) {
 export function undoStep() {
     const lastStep = removeLastHistory();
     if (!lastStep) return;
-    const lastStepCellId = lastStep.cell;
-    const cell = document.getElementById(`${lastStepCellId}`)
+    const cell = document.getElementById(`${lastStep.cell}`)
     
-    if ("oldNotes" in lastStep) {
-        undoNotes(lastStep, cell)
-    }
-
-    if ("oldValue" in lastStep) {  
-        undoValue(lastStep, cell) 
+    if (lastStep.mode === "notes") {
+        undoNotes(lastStep, cell);
+    } else if (lastStep.mode === "value") {
+        undoValue(lastStep, cell);
     }
 }
 
 function undoNotes(lastStep, cell) {
-    const lastStepNotes = lastStep.oldNotes;
-    const notes = cell.querySelectorAll(".note");
-    for (const note of notes) {
-        note.textContent = lastStepNotes.includes(note.id.split("-")[1]) ? note.id.split("-")[1] : "";
-    }
-    cell.dataset.mode = "notes" 
-    chooseCell(cell);
+    const previousNotes = lastStep.oldNotes;
+    const noteElements = cell.querySelectorAll(".note");
+    const cellValueElement = cell.querySelector(".cell-value");
 
-    const isEmpty = lastStep.oldNotes.length === 0;
-    if (isEmpty) {
-        cell.dataset.mode = "value"    
+    for (const note of noteElements) {
+        const noteNumber = note.id.split("-")[1];
+        note.textContent = previousNotes.includes(noteNumber) ? noteNumber : "";
     }
-}
 
-function undoValue(lastStep, cell) {
-    const lastStepValue = lastStep.oldValue;
-    const cellValue = cell.querySelector(".cell-value");
-    cellValue.textContent = lastStepValue;
-    if (lastStepValue === "") {
-        cell.classList.remove("changed");
-    } else {
-        cell.classList.add("changed");
+    if (previousNotes.length > 0) {
+        cell.dataset.mode = "notes";
+    } else  {
+        const previousStep = getLastHistory()
+
+        if (previousStep && previousStep.cell === lastStep.cell && previousStep.mode === "value") {
+            const previousStepValue = previousStep.newValue
+            cellValueElement.textContent = previousStepValue;
+            cell.dataset.mode = "value"
+
+            if (previousStepValue === "") {
+                cell.classList.remove("changed");
+            } else {
+                cell.classList.add("changed");
+            }
+        }
+        
     }
-    cell.dataset.mode = "value"
+
     chooseCell(cell);
     removeConflicts(cell);
     checkConflicts(cell);
-
-    const isEmpty = lastStep.oldValue === "";
-    if (isEmpty) {
-        cell.dataset.mode = "notes"
-    }
 }
+
+function undoValue(lastStep, cell) {
+    const previousValue = lastStep.oldValue;
+    const cellValueElement = cell.querySelector(".cell-value");
+    const noteElements = cell.querySelectorAll(".note");
+
+    cellValueElement.textContent = previousValue;
+    if (previousValue === "") {
+        cell.classList.remove("changed");
+
+        const previousStep = getLastHistory()
+
+        if (previousStep && previousStep.cell === lastStep.cell && previousStep.mode === "notes") {
+            const previousStepNotes = previousStep.newNotes
+            for (const note of noteElements) {
+                const noteNumber = note.id.split("-")[1];
+                note.textContent = previousStepNotes.includes(noteNumber) ? noteNumber : "";
+            }
+            cell.dataset.mode = "notes"
+        } 
+    } else {
+        cell.dataset.mode = "value";
+        cell.classList.add("changed");
+    }
+
+    chooseCell(cell);
+    removeConflicts(cell);
+    checkConflicts(cell);
+}
+
