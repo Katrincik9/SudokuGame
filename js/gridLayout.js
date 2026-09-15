@@ -43,12 +43,11 @@ function populateCellWithPuzzle(cell, newPuzzle) {
 
 export function createGrid(app) {
     const board = createBoard();
-    const newPuzzle = generatePuzzle();
     app.appendChild(board);
 
     for (let row=0; row<9; row++) {
         for (let column=0; column<9; column++) {
-            const cell = createCell(row, column, newPuzzle[row][column]);
+            const cell = createCell(row, column);
             board.appendChild(cell);
         }
     }
@@ -62,7 +61,7 @@ function createBoard() {
     return board
 }
 
-function createCell(row, column, puzzleValue) {
+function createCell(row, column) {
     const cell = document.createElement("div");
     cell.classList.add("board-cell");
     cell.dataset.row = row;
@@ -73,12 +72,7 @@ function createCell(row, column, puzzleValue) {
     const value = document.createElement("div");
     value.classList.add("cell-value");
     cell.appendChild(value);
-    const notes = createNotes(cell) 
-    
-    if (puzzleValue !== ".") {
-        value.textContent = puzzleValue;
-        cell.classList.add("fixed");
-    }
+    createNotes(cell) 
 
     return cell;
 }
