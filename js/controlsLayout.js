@@ -1,5 +1,6 @@
 import { pauseIcon, undoIcon, eraseIcon, notesIcon } from "./icons.js";
 import { eraseCell, toggleNotesMode, undoStep, chooseNumber } from "./cellOperations.js";
+import { createNewGame } from "./gridLayout.js";
 
 export function createControlButtons(app) {
     const controlsButtons = document.createElement("div");
@@ -102,6 +103,7 @@ function createNewGameButton(controlsButtons) {
     const newGameBtn = document.createElement("button");
     newGameBtn.id = "new-game-button";
     newGameBtn.innerText = "New Game";
+    newGameBtn.addEventListener("click", (event) => {createNewGame(event.target)})
     controlsButtons.appendChild(newGameBtn);
 }
 

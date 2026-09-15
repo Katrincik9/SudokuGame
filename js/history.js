@@ -27,3 +27,7 @@ export function getLastHistory() {
     const lastHistory = history[history.length-1];
     return lastHistory
 }
+
+export function clearHistory() {
+    history = []
+}

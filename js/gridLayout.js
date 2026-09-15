@@ -1,10 +1,44 @@
 import { chooseCell } from "./cellOperations.js";
+import { resetGameState } from "./cellOperations.js";
+import { clearHistory } from "./history.js";
 
 function generatePuzzle() {
     const generatedPuzzle = window.sudoku.generate("easy");
     const generatedPuzzleGrid = window.sudoku.board_string_to_grid(generatedPuzzle);
 
     return generatedPuzzleGrid
+}
+
+export function createNewGame() {
+    const cells = document.querySelectorAll(".board-cell")
+    const newPuzzle = generatePuzzle();
+    for (const cell of cells) {
+        resetCellState(cell)
+        populateCellWithPuzzle(cell, newPuzzle)
+    } 
+    resetGameState()
+    clearHistory()
+}
+
+function resetCellState(cell) {
+    cell.classList.remove("fixed", "same-value", "highlighted", "selected", "conflict", "changed")
+    const cellValue = cell.querySelector(".cell-value")
+    cellValue.textContent = ""
+    const cellNotes = cell.querySelectorAll(".note")
+    for (const note of cellNotes) {
+        note.textContent = ""
+    }
+}
+
+function populateCellWithPuzzle(cell, newPuzzle) {
+    const row = cell.dataset.row
+    const column = cell.dataset.column
+    const cellValue = cell.querySelector(".cell-value")
+    const puzzleValue = newPuzzle[row][column]
+    if (puzzleValue !== ".") {
+        cellValue.textContent = puzzleValue
+        cell.classList.add("fixed");
+    }
 }
 
 export function createGrid(app) {
@@ -39,12 +73,11 @@ function createCell(row, column, puzzleValue) {
     const value = document.createElement("div");
     value.classList.add("cell-value");
     cell.appendChild(value);
+    const notes = createNotes(cell) 
     
     if (puzzleValue !== ".") {
         value.textContent = puzzleValue;
         cell.classList.add("fixed");
-    } else {
-        const notes = createNotes(cell) 
     }
 
     return cell;

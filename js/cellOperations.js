@@ -4,6 +4,12 @@ let selectedCell = null;
 let notesOn = false; 
 const mapOfConflicts = new Map();
 
+export function resetGameState() {
+    selectedCell = null;
+    notesOn = false; 
+    mapOfConflicts.clear();
+}
+
 export function chooseCell(cell) {
     if (!cell.classList.contains("board-cell")) {
         return;
