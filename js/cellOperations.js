@@ -11,6 +11,31 @@ export function resetGameState() {
     history.clearHistory()
 }
 
+document.addEventListener("keydown", (event) => {
+    if (!selectedCell) return;
+    const { row, column } = selectedCell.dataset;    
+    let selectedRow = Number(row);
+    let selectedColumn = Number(column);
+    switch (event.key) {
+        case "ArrowUp":
+            selectedRow--;
+            break;
+        case "ArrowDown":
+            selectedRow++;
+            break;
+        case "ArrowLeft":
+            selectedColumn--;
+            break;
+        case "ArrowRight":
+            selectedColumn++;
+            break;
+    }
+    const nextCell = document.querySelector(`.board-cell[data-row='${selectedRow}'][data-column='${selectedColumn}']`)
+    if (nextCell) {
+        chooseCell(nextCell)
+    }
+})
+
 export function chooseCell(cell) {
     if (!cell.classList.contains("board-cell")) {
         return;
