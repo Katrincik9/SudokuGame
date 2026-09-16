@@ -1,5 +1,5 @@
 import { pauseIcon, undoIcon, eraseIcon, notesIcon } from "./icons.js";
-import { eraseCell, toggleNotesMode, undoStep, chooseNumber } from "./cellOperations.js";
+import { eraseSelectedCell, toggleNotesMode, undoOperation, enterNumber } from "./cellOperations.js";
 import { createNewGame } from "./gridLayout.js";
 
 export function createControlButtons(app) {
@@ -49,12 +49,12 @@ const buttons = [
     {
         id: "undo-button",
         icon: undoIcon,
-        function: undoStep,
+        function: undoOperation,
     },
     {
         id: "erase-button",
         icon: eraseIcon,
-        function: eraseCell,
+        function: eraseSelectedCell,
     },
     {
         id: "notes-button",
@@ -87,7 +87,7 @@ function createButton(id, icon) {
 function createNumpad(controlsButtons) {
     const numpad = document.createElement("div");
     numpad.id = "numpad";
-    numpad.addEventListener("click", (event) => {chooseNumber(event.target)}) 
+    numpad.addEventListener("click", (event) => {enterNumber(event.target)}) 
     controlsButtons.appendChild(numpad);
 
     for (let index=1; index<=9; index++){

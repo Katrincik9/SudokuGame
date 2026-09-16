@@ -1,32 +1,16 @@
 class History {
     #history = []
 
-    addValueToHistory(id, oldValue, newValue) {
+    addCellDataToHistory(id, oldData, newData) {
         this.#history.push({
             cell: id,
-            mode: "value",
-            oldValue: oldValue,
-            newValue: newValue,
-        })
-    }   
-
-    addNotesToHistory(id, oldNotes, newNotes) {
-        this.#history.push({
-            cell: id,
-            mode: "notes",
-            oldNotes: oldNotes,
-            newNotes: newNotes,
+            oldData: oldData,
+            newData: newData,
         })
     }
 
     pop() {
-        const lastHistoryElement = this.#history.pop()
-        return lastHistoryElement
-    }
-
-    getLastHistory() {
-        const lastHistory = this.#history[this.#history.length-1];
-        return lastHistory
+        return this.#history.pop()
     }
 
     clearHistory() {

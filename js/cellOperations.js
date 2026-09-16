@@ -98,7 +98,7 @@ function removeConflicts(cell) {
         } 
 
         if (conflicts.length === 0) {
-            const noConflictCell = document.getElementById(`${conflictedCell}`);
+            const noConflictCell = document.getElementById(conflictedCell);
             noConflictCell.classList.remove("conflict");
             mapOfConflicts.delete(conflictedCell);
         }
@@ -108,32 +108,38 @@ function removeConflicts(cell) {
     cell.classList.remove("conflict");
 }
 
-
-export function chooseNumber(button) {
+export function enterNumber(button) {
     if (!button.classList.contains("numpad-item") || !selectedCell || selectedCell.classList.contains("fixed")) {
         return
     } 
 
     const number = button.id.split("-")[1]; 
-    const selectedCellNotesElement = selectedCell.querySelectorAll(".note");
+    const selectedCellNoteElements = selectedCell.querySelectorAll(".note");
     const selectedCellValueElement = selectedCell.querySelector(".cell-value");
 
     if (!notesOn) {
-        for (const note of selectedCellNotesElement) {
-            note.textContent = ""
-        }
-        enterCellValue(selectedCell, selectedCellValueElement, number)
+        selectedCell.dataset.mode = "value";
+        changeCellValue(selectedCell, selectedCellValueElement, selectedCellNoteElements, number)
     } else {
-        selectedCellValueElement.textContent = ""
-        enterCellNotes(selectedCell, selectedCellNotesElement, number)
+        selectedCell.dataset.mode = "notes";
+        changeCellNotes(selectedCell, selectedCellValueElement, selectedCellNoteElements, number)
     }
 
-    highlightCells(selectedCell)
+    highlightCells(selectedCell);
+    removeConflicts(selectedCell);
+    checkConflicts(selectedCell);
 }
 
-function enterCellValue(selectedCell, selectedCellValueElement, number) {
-    selectedCell.dataset.mode = "value";
-    const currentCellValue  = selectedCellValueElement.textContent;
+function changeCellValue(selectedCell, selectedCellValueElement, selectedCellNoteElements, number) {
+    const currentCellNotes = [...selectedCellNoteElements].filter((noteElement) => noteElement.textContent !== "").map((noteElement) => noteElement.textContent);
+    const currentCellValue = selectedCellValueElement.textContent;
+    const currentData = currentCellNotes.length ? currentCellNotes : currentCellValue;
+
+    if (currentCellNotes.length) {
+        for (const note of selectedCellNoteElements) {
+            note.textContent = ""
+        }
+    }
 
     if (currentCellValue === number) {
         selectedCellValueElement.textContent = "";
@@ -143,58 +149,62 @@ function enterCellValue(selectedCell, selectedCellValueElement, number) {
         selectedCell.classList.add("changed");
     }
 
-    const updatedCellValue = selectedCellValueElement.textContent
-    
-    removeConflicts(selectedCell);
-    checkConflicts(selectedCell);
-    history.addValueToHistory(selectedCell.id, currentCellValue, updatedCellValue)
+    const newCellValue = selectedCellValueElement.textContent;
+    history.addCellDataToHistory(selectedCell.id, currentData, newCellValue);
 }
 
-function enterCellNotes(selectedCell, selectedCellNotesElement, number) {
-    selectedCell.dataset.mode = "notes"
-    const currentCellNotes = [...selectedCellNotesElement].filter((noteElement) => noteElement.textContent !== "").map((noteElement) => noteElement.textContent)
-    let updatedCellNotes = [...currentCellNotes]
-    for (const note of selectedCellNotesElement) {
-        if (number === "") {
-            updatedCellNotes = []
-            note.textContent = ""
-            continue;
-        }
-        
-        const noteNumber = note.id.split("-")[1];
-        if (noteNumber === number) {
-            if (note.textContent === "") {
-                note.textContent = number
-                updatedCellNotes.push(note.textContent)
-            } else {
-                updatedCellNotes = updatedCellNotes.filter((noteValue) => noteValue !== number)
-                note.textContent = ""
-            }
-        }
+function changeCellNotes(selectedCell, selectedCellValueElement, selectedCellNoteElements, number) {
+    const currentCellNotes = [...selectedCellNoteElements].filter((noteElement) => noteElement.textContent !== "").map((noteElement) => noteElement.textContent);
+    const currentCellValue = selectedCellValueElement.textContent;
+    const currentData = currentCellValue ? currentCellValue : currentCellNotes;
+    let newCellNotes = [...currentCellNotes];
+    
+    if (currentCellValue) {
+        selectedCellValueElement.textContent = "" ;
     }
 
-    removeConflicts(selectedCell);
-    checkConflicts(selectedCell);
-    if (currentCellNotes.length === updatedCellNotes.length) return;
-    history.addNotesToHistory(selectedCell.id, currentCellNotes, updatedCellNotes)
+    const note = [...selectedCellNoteElements].find(note => note.id.split("-")[1] === number)
+    if (note.textContent === "") {
+        note.textContent = number;
+        newCellNotes.push(number);
+    } else {
+        note.textContent = "";
+        newCellNotes = newCellNotes.filter((noteValue) => noteValue !== number);
+    }
+
+    history.addCellDataToHistory(selectedCell.id, currentData, newCellNotes);
 }
 
-export function eraseCell() {
+export function eraseSelectedCell() {
     if (!selectedCell || selectedCell.classList.contains("fixed")) {
         return;
     }
     
-    const cellMode = selectedCell.dataset.mode
+    const cellMode = selectedCell.dataset.mode;
     const selectedCellValueElement = selectedCell.querySelector(".cell-value");
-    const selectedCellNotesElement = selectedCell.querySelectorAll(".note");
+    const selectedCellNoteElements = selectedCell.querySelectorAll(".note");
+    let currentData; 
 
     if (cellMode === "value") {
-        enterCellValue(selectedCell, selectedCellValueElement, "")
+        currentData = selectedCellValueElement.textContent;
+        if (currentData === "" ) {
+            return;
+        }
+        selectedCellValueElement.textContent = "";
+        selectedCell.classList.remove("changed");
+        history.addCellDataToHistory(selectedCell.id, currentData, "");
     } else if (cellMode === "notes") {
-        enterCellNotes(selectedCell, selectedCellNotesElement, "")
+        currentData = [...selectedCellNoteElements].filter((noteElement) => noteElement.textContent !== "").map((noteElement) => noteElement.textContent)
+        if (currentData.length === 0) {
+            return;
+        }
+        for (const note of selectedCellNoteElements) {
+            note.textContent = "";
+        }
+        history.addCellDataToHistory(selectedCell.id, currentData, []);
     }
 
-    highlightCells(selectedCell)
+    highlightCells(selectedCell);
     removeConflicts(selectedCell);
     checkConflicts(selectedCell);
 }
@@ -204,74 +214,34 @@ export function toggleNotesMode(button) {
     button.classList.toggle("notes-on");  
 }
 
-export function undoStep() {
+export function undoOperation() {
     const lastStep = history.pop();
     if (!lastStep) return;
-    const cell = document.getElementById(`${lastStep.cell}`)
+
+    const cell = document.getElementById(lastStep.cell)
+    const noteElements = cell.querySelectorAll(".note");
+    const cellValueElement = cell.querySelector(".cell-value");
+    const oldData = lastStep.oldData;
     
-    if (lastStep.mode === "notes") {
-        undoNotes(lastStep, cell);
-    } else if (lastStep.mode === "value") {
-        undoValue(lastStep, cell);
-    }
-}
-
-function undoNotes(lastStep, cell) {
-    const previousNotes = lastStep.oldNotes;
-    const noteElements = cell.querySelectorAll(".note");
-    const cellValueElement = cell.querySelector(".cell-value");
-
-    for (const note of noteElements) {
-        const noteNumber = note.id.split("-")[1];
-        note.textContent = previousNotes.includes(noteNumber) ? noteNumber : "";
-    }
-
-    if (previousNotes.length > 0) {
-        cell.dataset.mode = "notes";
-    } else  {
-        const previousStep = history.getLastHistory()
-
-        if (previousStep && previousStep.cell === lastStep.cell && previousStep.mode === "value") {
-            const previousStepValue = previousStep.newValue
-            cellValueElement.textContent = previousStepValue;
-            cell.dataset.mode = "value"
-
-            if (previousStepValue === "") {
-                cell.classList.remove("changed");
-            } else {
-                cell.classList.add("changed");
-            }
-        }
-        
-    }
-
-    chooseCell(cell);
-    removeConflicts(cell);
-    checkConflicts(cell);
-}
-
-function undoValue(lastStep, cell) {
-    const previousValue = lastStep.oldValue;
-    const cellValueElement = cell.querySelector(".cell-value");
-    const noteElements = cell.querySelectorAll(".note");
-
-    cellValueElement.textContent = previousValue;
-    if (previousValue === "") {
+    if (Array.isArray(oldData)) {
+        cellValueElement.textContent = ""
         cell.classList.remove("changed");
-
-        const previousStep = history.getLastHistory()
-
-        if (previousStep && previousStep.cell === lastStep.cell && previousStep.mode === "notes") {
-            const previousStepNotes = previousStep.newNotes
-            for (const note of noteElements) {
-                const noteNumber = note.id.split("-")[1];
-                note.textContent = previousStepNotes.includes(noteNumber) ? noteNumber : "";
-            }
-            cell.dataset.mode = "notes"
-        } 
+        for (const note of noteElements) {
+            const noteNumber = note.id.split("-")[1];
+            note.textContent = oldData.includes(noteNumber) ? noteNumber : "";
+        }
+        cell.dataset.mode = "notes";
     } else {
+        for (const note of noteElements) {
+            note.textContent = "";
+        }
+        cellValueElement.textContent = oldData
+        if (oldData === "") {
+            cell.classList.remove("changed");
+        } else {
+            cell.classList.add("changed");
+        }
         cell.dataset.mode = "value";
-        cell.classList.add("changed");
     }
 
     chooseCell(cell);
