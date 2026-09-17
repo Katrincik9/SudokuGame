@@ -16,6 +16,7 @@ export function createNewGame() {
         populateCellWithPuzzle(cell, newPuzzle)
     } 
     resetGameState()
+    chooseCell(cells[0])
 }
 
 function resetCellState(cell) {

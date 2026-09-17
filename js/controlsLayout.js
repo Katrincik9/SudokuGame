@@ -87,7 +87,13 @@ function createButton(id, icon) {
 function createNumpad(controlsButtons) {
     const numpad = document.createElement("div");
     numpad.id = "numpad";
-    numpad.addEventListener("click", (event) => {enterNumber(event.target)}) 
+    numpad.addEventListener("click", (event) => {
+        if (!event.target.classList.contains("numpad-item")) {
+            return;
+        }
+        const number = event.target.id.split("-")[1];
+        enterNumber(number);
+    }) 
     controlsButtons.appendChild(numpad);
 
     for (let index=1; index<=9; index++){

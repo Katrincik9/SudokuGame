@@ -3,6 +3,8 @@ import history from "./history.js";
 let selectedCell = null;
 let notesOn = false; 
 const mapOfConflicts = new Map();
+const arrowKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"]
+const numberKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 export function resetGameState() {
     selectedCell = null;
@@ -30,9 +32,20 @@ document.addEventListener("keydown", (event) => {
             selectedColumn++;
             break;
     }
-    const nextCell = document.querySelector(`.board-cell[data-row='${selectedRow}'][data-column='${selectedColumn}']`)
-    if (nextCell) {
-        chooseCell(nextCell)
+    
+    if (arrowKeys.includes(event.key)) {
+        const nextCell = document.querySelector(`.board-cell[data-row='${selectedRow}'][data-column='${selectedColumn}']`)
+        if (nextCell) {
+            chooseCell(nextCell)
+        }
+    }
+
+    if (numberKeys.includes(event.key)) {
+        enterNumber(event.key)
+    }
+
+    if (event.key === "Backspace" || event.key === "Delete") {
+        eraseSelectedCell()
     }
 })
 
@@ -133,12 +146,11 @@ function removeConflicts(cell) {
     cell.classList.remove("conflict");
 }
 
-export function enterNumber(button) {
-    if (!button.classList.contains("numpad-item") || !selectedCell || selectedCell.classList.contains("fixed")) {
+export function enterNumber(number) {
+    if (!selectedCell || selectedCell.classList.contains("fixed")) {
         return
     } 
 
-    const number = button.id.split("-")[1]; 
     const selectedCellNoteElements = selectedCell.querySelectorAll(".note");
     const selectedCellValueElement = selectedCell.querySelector(".cell-value");
 
