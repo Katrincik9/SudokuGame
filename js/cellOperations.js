@@ -167,18 +167,23 @@ export function enterNumber(number) {
     checkConflicts(selectedCell);
 }
 
-function changeCellValue(selectedCell, selectedCellValueElement, selectedCellNoteElements, number) {
-    const currentCellNotes = [...selectedCellNoteElements].filter((noteElement) => noteElement.textContent !== "").map((noteElement) => noteElement.textContent);
+function getCurrentCellData(selectedCellValueElement, selectedCellNoteElements) {
     const currentCellValue = selectedCellValueElement.textContent;
-    const currentData = currentCellNotes.length ? currentCellNotes : currentCellValue;
+    const currentCellNotes = [...selectedCellNoteElements].filter((noteElement) => noteElement.textContent !== "").map((noteElement) => noteElement.textContent);
 
-    if (currentCellNotes.length) {
+    return currentCellValue ? currentCellValue : currentCellNotes;
+}
+
+function changeCellValue(selectedCell, selectedCellValueElement, selectedCellNoteElements, number) {
+    const currentData = getCurrentCellData(selectedCellValueElement, selectedCellNoteElements)
+
+    if (Array.isArray(currentData) && currentData.length) {
         for (const note of selectedCellNoteElements) {
             note.textContent = ""
         }
     }
 
-    if (currentCellValue === number) {
+    if (selectedCellValueElement.textContent === number) {
         selectedCellValueElement.textContent = "";
         selectedCell.classList.remove("changed");
     } else {
@@ -187,16 +192,14 @@ function changeCellValue(selectedCell, selectedCellValueElement, selectedCellNot
     }
 
     const newCellValue = selectedCellValueElement.textContent;
-    history.addCellDataToHistory(selectedCell.id, currentData, newCellValue);
+    history.addCellData(selectedCell.id, currentData, newCellValue);
 }
 
 function changeCellNotes(selectedCell, selectedCellValueElement, selectedCellNoteElements, number) {
-    const currentCellNotes = [...selectedCellNoteElements].filter((noteElement) => noteElement.textContent !== "").map((noteElement) => noteElement.textContent);
-    const currentCellValue = selectedCellValueElement.textContent;
-    const currentData = currentCellValue ? currentCellValue : currentCellNotes;
-    let newCellNotes = [...currentCellNotes];
+    const currentData = getCurrentCellData(selectedCellValueElement, selectedCellNoteElements)
+    let newCellNotes = Array.isArray(currentData) ? [...currentData] : [];
     
-    if (currentCellValue) {
+    if (selectedCellValueElement.textContent) {
         selectedCellValueElement.textContent = "" ;
     }
 
@@ -209,7 +212,7 @@ function changeCellNotes(selectedCell, selectedCellValueElement, selectedCellNot
         newCellNotes = newCellNotes.filter((noteValue) => noteValue !== number);
     }
 
-    history.addCellDataToHistory(selectedCell.id, currentData, newCellNotes);
+    history.addCellData(selectedCell.id, currentData, newCellNotes);
 }
 
 export function eraseSelectedCell() {
@@ -220,25 +223,21 @@ export function eraseSelectedCell() {
     const cellMode = selectedCell.dataset.mode;
     const selectedCellValueElement = selectedCell.querySelector(".cell-value");
     const selectedCellNoteElements = selectedCell.querySelectorAll(".note");
-    let currentData; 
+    const currentData = getCurrentCellData(selectedCellValueElement, selectedCellNoteElements)
+
+    if (currentData.length === 0) {
+            return;
+        }
 
     if (cellMode === "value") {
-        currentData = selectedCellValueElement.textContent;
-        if (currentData === "" ) {
-            return;
-        }
         selectedCellValueElement.textContent = "";
         selectedCell.classList.remove("changed");
-        history.addCellDataToHistory(selectedCell.id, currentData, "");
+        history.addCellData(selectedCell.id, currentData, "");
     } else if (cellMode === "notes") {
-        currentData = [...selectedCellNoteElements].filter((noteElement) => noteElement.textContent !== "").map((noteElement) => noteElement.textContent)
-        if (currentData.length === 0) {
-            return;
-        }
         for (const note of selectedCellNoteElements) {
             note.textContent = "";
         }
-        history.addCellDataToHistory(selectedCell.id, currentData, []);
+        history.addCellData(selectedCell.id, currentData, []);
     }
 
     highlightCells(selectedCell);

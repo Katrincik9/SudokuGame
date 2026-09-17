@@ -1,7 +1,7 @@
 class History {
     #history = []
 
-    addCellDataToHistory(id, oldData, newData) {
+    addCellData(id, oldData, newData) {
         this.#history.push({
             cell: id,
             oldData: oldData,
