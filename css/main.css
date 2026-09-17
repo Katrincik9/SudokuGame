@@ -11,10 +11,12 @@
 :root {
     --buttonsBackgroundColor : #eaeef4;
     --gridDarkBorder : #344861;
-    --gridLightBorder : #94a3b7;
+    --gridLightBorder : #bfc6d4;
     --hoverBtn : #dce3ed;
     --activeBtn : #d2dae7;
     --numberColor: #325aaf;
+    --selectedCellColor: #bbdefb;
+    --noteColor: #6e7c8c;
 }
 
 body {
@@ -56,6 +58,31 @@ body {
     pointer-events: none;
 }
 
+#sudoku-board.hidden .board-cell > div {
+    display: none;
+}
+
+#sudoku-board.hidden .board-cell {
+    background-color: #fff;
+}
+
+#sudoku-board.hidden #pause-overlay {
+    display: grid;
+    place-items: center;
+}
+
+#pause-overlay {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+#pause-overlay svg {
+    width: 13%;
+}
+
 .board-cell {
     width: 55px;
     height: 55px;
@@ -83,7 +110,7 @@ body {
 }
 
 .board-cell.selected {
-    background-color: #bbdefb;
+    background-color: var(--selectedCellColor);
 }
 
 .board-cell.changed.conflict{
@@ -91,16 +118,12 @@ body {
 }
 
 .board-cell.selected.conflict {
-    background-color: #bbdefb;
+    background-color: var(--selectedCellColor);
 }   
 
 .board-cell.conflict {
     background-color: #f7cfd6;
 }
-
-/* .board-cell.conflict[data-mode="value"] {
-    background-color: #f7cfd6;
-} */
 
 .board-cell:nth-child(-n+9) {
     border-top: none;
@@ -138,7 +161,7 @@ body {
 }
 
 .note {
-    color: #6e7c8c;
+    color: var(--noteColor);
     font-size: 12px;
 }
 
@@ -157,7 +180,7 @@ body {
 
 #timer-text {
     text-align: end;
-    color: #6e7c8c;
+    color: var(--noteColor);
     font-family: "Hauss-Bold";
 }
 
@@ -187,7 +210,18 @@ body {
 
 #timer-button svg {
     vertical-align: middle;
-    color: #94a3b7;
+}
+
+.play-icon {
+    display: none;
+}
+
+#timer-button.paused .pause-icon {
+    display: none;
+}
+
+#timer-button.paused .play-icon {
+    display: block;
 }
 
 .btn-icon {

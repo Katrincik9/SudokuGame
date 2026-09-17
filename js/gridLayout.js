@@ -1,5 +1,7 @@
 import { chooseCell } from "./cellOperations.js";
 import { resetGameState } from "./cellOperations.js";
+import { pauseIconBoard } from "./icons.js";
+import { toggleTimer } from "./controlsLayout.js";
 
 function generatePuzzle() {
     const generatedPuzzle = window.sudoku.generate("easy");
@@ -50,6 +52,19 @@ export function createGrid(app) {
             board.appendChild(cell);
         }
     }
+
+    createPauseOverlay(board)
+}
+
+function createPauseOverlay(board) {
+    const pauseOverlay = document.createElement("div");
+    pauseOverlay.id = "pause-overlay";
+    pauseOverlay.innerHTML = pauseIconBoard;
+    pauseOverlay.addEventListener("click", () => {
+        const timerBtn = document.getElementById("timer-button");
+        toggleTimer(timerBtn);
+    })
+    board.appendChild(pauseOverlay);
 }
 
 function createBoard() {
@@ -88,7 +103,5 @@ function createNotes(cell) {
     }
 
     cell.appendChild(notes);
-
-    return notes
 }
 

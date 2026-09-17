@@ -1,4 +1,4 @@
-import { pauseIcon, undoIcon, eraseIcon, notesIcon } from "./icons.js";
+import { pauseIcon, playIcon, undoIcon, eraseIcon, notesIcon } from "./icons.js";
 import { eraseSelectedCell, toggleNotesMode, undoOperation, enterNumber } from "./cellOperations.js";
 import { createNewGame } from "./gridLayout.js";
 
@@ -41,8 +41,15 @@ function createTimerDisplay(timerSection) {
 function createTimerButton(timerSection) {
     const timerBtn = document.createElement("button");
     timerBtn.id = "timer-button";
-    timerBtn.innerHTML = pauseIcon;
+    timerBtn.innerHTML = pauseIcon + playIcon;
+    timerBtn.addEventListener("click", (event) => toggleTimer(event.currentTarget))
     timerSection.appendChild(timerBtn);
+}
+
+export function toggleTimer(timer) {
+    timer.classList.toggle("paused");  
+    const board = document.getElementById("sudoku-board");
+    board.classList.toggle("hidden")  
 }
 
 const buttons = [
