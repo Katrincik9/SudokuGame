@@ -29,9 +29,13 @@ body {
 }
 
 #sudoku-board {
+    width: 500px;
+    height: 500px;
+    box-sizing: border-box;
     border: 2.5px solid var(--gridDarkBorder);
     display: grid;
     grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
     text-align: center;
     position: relative;
 }
@@ -43,7 +47,7 @@ body {
     border-right: 2.5px solid var(--gridDarkBorder);    
     position: absolute;
     height: 100%;
-    left: 163px;   
+    left: 33%;   
     pointer-events: none;
 }
 
@@ -54,7 +58,7 @@ body {
     border-bottom: 2.5px solid var(--gridDarkBorder);    
     position: absolute;
     width: 100%;
-    top: 163px;
+    top: 33%;
     pointer-events: none;
 }
 
@@ -84,13 +88,11 @@ body {
 }
 
 .board-cell {
-    width: 55px;
-    height: 55px;
-    box-sizing: border-box;
+    display: grid;
+    place-items: center;
     border-top: 0.5px solid var(--gridLightBorder);
     border-right: 0.5px solid var(--gridLightBorder);
     color: var(--gridDarkBorder);
-    font-size: 38px;
 }
 
 .board-cell > div {
@@ -149,15 +151,19 @@ body {
     display: grid;
 }
 
+.board-cell.fixed .cell-notes {
+    display: none;
+}
+
 .cell-value {
-    height: 100%;
+    font-size: 38px;
 }
 
 .cell-notes {
     display: grid;
+    width: 80%;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    padding: 4px;
 }
 
 .note {
@@ -206,6 +212,10 @@ body {
     border: none;
     border-radius: 50%;
     cursor: pointer;
+}
+
+#timer-button:hover {
+    background-color: var(--hoverBtn);
 }
 
 #timer-button svg {
@@ -348,4 +358,53 @@ body {
     cursor: pointer;
     font-size: 17px;
     font-family: "Hauss-Bold", sans-serif;
+}
+
+@media screen and (max-width: 768px) {
+    #app {
+        max-width: 500px;
+        padding-top: 45px;
+        margin-inline: auto;
+        flex-direction: column;
+        position: relative;
+    }
+
+    #controls-buttons, #sudoku-board {
+        width: 100%;
+        max-width: 500px;
+        margin: 0;
+    }
+
+    #timer-section {
+        position: absolute;
+        top: 1px;
+        right: 0;
+    }
+
+    #game-control-buttons {
+        margin-top: 12px;
+        margin-bottom: 12px;
+    }
+
+    #numpad {
+        flex-wrap: nowrap;
+    }
+
+    .numpad-item {
+        margin: 0;
+        background-color: #fff;
+        font-size: 52px;
+    }
+
+    .numpad-item:hover {
+        background-color: #fff;
+    }   
+
+    .numpad-item:active {
+        background-color: var(--activeBtn);
+    }
+
+    #new-game-button {
+        display: none;
+    }
 }
