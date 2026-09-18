@@ -2,6 +2,7 @@ import { chooseCell } from "./cellOperations.js";
 import { resetGameState } from "./cellOperations.js";
 import { pauseIconBoard } from "./icons.js";
 import { toggleTimer } from "./controlsLayout.js";
+import { startNewTime } from "./controlsLayout.js";
 
 function generatePuzzle() {
     const generatedPuzzle = window.sudoku.generate("easy");
@@ -19,6 +20,7 @@ export function createNewGame() {
     } 
     resetGameState()
     chooseCell(cells[0])
+    startNewTime()
 }
 
 function resetCellState(cell) {
