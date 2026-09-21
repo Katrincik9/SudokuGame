@@ -183,13 +183,7 @@ function changeCellValue(selectedCell, selectedCellValueElement, selectedCellNot
         }
     }
 
-    if (selectedCellValueElement.textContent === number) {
-        selectedCellValueElement.textContent = "";
-        selectedCell.classList.remove("changed");
-    } else {
-        selectedCellValueElement.textContent = number;
-        selectedCell.classList.add("changed");
-    }
+    selectedCellValueElement.textContent = selectedCellValueElement.textContent === number ? "" : number
 
     const newCellValue = selectedCellValueElement.textContent;
     history.addCellData(selectedCell.id, currentData, newCellValue);
@@ -231,7 +225,6 @@ export function eraseSelectedCell() {
 
     if (cellMode === "value") {
         selectedCellValueElement.textContent = "";
-        selectedCell.classList.remove("changed");
         history.addCellData(selectedCell.id, currentData, "");
     } else if (cellMode === "notes") {
         for (const note of selectedCellNoteElements) {
@@ -261,7 +254,6 @@ export function undoOperation() {
     
     if (Array.isArray(oldData)) {
         cellValueElement.textContent = ""
-        cell.classList.remove("changed");
         for (const note of noteElements) {
             const noteNumber = note.id.split("-")[1];
             note.textContent = oldData.includes(noteNumber) ? noteNumber : "";
@@ -272,11 +264,6 @@ export function undoOperation() {
             note.textContent = "";
         }
         cellValueElement.textContent = oldData
-        if (oldData === "") {
-            cell.classList.remove("changed");
-        } else {
-            cell.classList.add("changed");
-        }
         cell.dataset.mode = "value";
     }
 

@@ -41,6 +41,8 @@ function populateCellWithPuzzle(cell, newPuzzle) {
     if (puzzleValue !== ".") {
         cellValue.textContent = puzzleValue
         cell.classList.add("fixed");
+    } else {
+        cell.classList.add("changed")
     }
 }
 
