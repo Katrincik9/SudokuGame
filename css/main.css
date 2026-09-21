@@ -20,17 +20,18 @@
 }
 
 body {
+    margin: 0;
     font-family: "Hauss", sans-serif; 
 }
 
 #app {
-    display: flex;
-    justify-content: center;
+    margin: 2% auto;
 }
 
 #sudoku-board {
-    width: 500px;
-    height: 500px;
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 1/1;
     box-sizing: border-box;
     border: 2.5px solid var(--gridDarkBorder);
     display: grid;
@@ -93,6 +94,7 @@ body {
     border-top: 0.5px solid var(--gridLightBorder);
     border-right: 0.5px solid var(--gridLightBorder);
     color: var(--gridDarkBorder);
+    font-size: 38px;
 }
 
 .board-cell > div {
@@ -127,12 +129,20 @@ body {
     background-color: #f7cfd6;
 }
 
-.board-cell:nth-child(-n+9) {
+.board-cell[data-row='0'] {
     border-top: none;
 }
 
-.board-cell:nth-child(9n) {
+.board-cell[data-row='3'], .board-cell[data-row='6']{
+    border-top-color: transparent;
+}
+
+.board-cell[data-column='8']  {
     border-right: none;
+}
+
+.board-cell[data-column='2'], .board-cell[data-column='5']{
+    border-right-color: transparent;
 }
 
 .board-cell[data-mode="value"] .cell-value {
@@ -155,27 +165,13 @@ body {
     display: none;
 }
 
-.cell-value {
-    font-size: 38px;
-}
-
 .cell-notes {
     display: grid;
     width: 80%;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-}
-
-.note {
     color: var(--noteColor);
     font-size: 12px;
-}
-
-#controls-buttons {
-    width: 320px;
-    margin-left: 20px;
-    display: flex;
-    flex-direction: column;
 }
 
 #timer-section {
@@ -244,7 +240,7 @@ body {
     justify-content: space-between;
     margin-top: 19px;
     margin-bottom: 8px;
-    padding: 0 2.5%;
+    padding: 0 3%;
 }
 
 .game-control-button {
@@ -282,7 +278,7 @@ body {
     color:#fff;
     position: absolute;
     border-radius: 50px;
-    top: -5%;
+    top: -15%;
     left: 65%;
     width: 30px;
     height: 24px;
@@ -307,45 +303,19 @@ body {
 }
 
 #numpad {
-    display: flex;
-    flex-wrap: wrap;
-    flex: 1;
+    display: grid;
 }
 
 .numpad-item {
-    background-color: var(--buttonsBackgroundColor);
-    flex-basis: 32%;
     color: var(--numberColor);
     cursor: pointer;
-    font-size: 42px;
-    margin: 1%;
     border: 0;
     border-radius: 5px;
     font-family: "Hauss", sans-serif;
 }
 
-.numpad-item:hover {
-    background-color: var(--hoverBtn);
-}
-
 .numpad-item:active {
     background-color: var(--activeBtn);
-}
-
-.numpad-item:first-child, .numpad-item:nth-child(2), .numpad-item:nth-child(3) {
-    margin-top: 0;
-}
-
-.numpad-item:nth-child(7), .numpad-item:nth-child(8), .numpad-item:nth-child(9) {
-    margin-bottom: 0;
-}
-
-.numpad-item:nth-child(3n-2) {
-    margin-left: 0;
-}
-
-.numpad-item:nth-child(3n) {
-    margin-right: 0;
 }
 
 #new-game-button {
@@ -360,18 +330,45 @@ body {
     font-family: "Hauss-Bold", sans-serif;
 }
 
-@media screen and (max-width: 768px) {
+@media (min-width: 901px) {
+    #app {
+        display: flex;
+        justify-content: center;
+    }
+
+    #controls-buttons {
+        width: 320px;
+        margin-left: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #numpad {
+        flex: 1;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 6.5px;
+    }
+
+    .numpad-item {
+        background-color: var(--buttonsBackgroundColor);
+        font-size: 42px;
+    }
+
+    .numpad-item:hover {
+        background-color: #fff;
+    } 
+}
+
+@media (max-width: 900px) {
     #app {
         max-width: 500px;
         padding-top: 45px;
-        margin-inline: auto;
-        flex-direction: column;
         position: relative;
     }
 
-    #controls-buttons, #sudoku-board {
+    #controls-buttons {
         width: 100%;
-        max-width: 500px;
         margin: 0;
     }
 
@@ -382,26 +379,119 @@ body {
     }
 
     #game-control-buttons {
-        margin-top: 12px;
-        margin-bottom: 12px;
+        margin: 0;
+        padding: 12px 15px;
     }
 
     #numpad {
-        flex-wrap: nowrap;
+        grid-template-columns: repeat(9, 1fr);  
+        grid-template-rows: none;
+        gap: 0;
     }
 
     .numpad-item {
-        margin: 0;
-        background-color: #fff;
+        padding: 0;
+        background-color: transparent;
         font-size: 52px;
+    }  
+
+    #new-game-button {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    #app {
+        padding: 45px 3% 0 3%;
     }
 
-    .numpad-item:hover {
-        background-color: #fff;
-    }   
+    #sudoku-board {
+        container-type: inline-size;
+        border-width: clamp(2px, 0.5vw, 2.5px);
+    }
 
-    .numpad-item:active {
+    #sudoku-board::after {
+        border-width: clamp(2px, 0.5vw, 2.5px);
+    }
+
+    #sudoku-board::before {
+        border-width: clamp(2px, 0.5vw, 2.5px);
+    }
+
+    .cell-value {
+        font-size: clamp(18px, 7cqw, 38px);
+    }
+
+    .cell-notes {
+        font-size: clamp(7px, 2vw, 12px);
+    }
+
+    #pause-overlay svg {
+        width: max(13%, 60px);
+    }
+    #controls-buttons {
+        width: 100%;
+        margin: 0;
+    }
+
+    #timer-section {
+        padding-right: 3%;
+    }
+
+    #game-control-buttons {
+        padding: 10px 15px;
+        gap: 20px;
+    }
+
+    .game-control-button {
+        width: auto;
+        height: 38px;
+        background-color: transparent;
+        border: none;
+        border-radius: 8px;
+        padding: 0;
+    }
+
+    .game-control-button svg {
+        width: clamp(32px, 30%, 38px);
+    }
+
+    .game-control-button svg path{
+        fill: #6d7584
+    }
+
+    .game-control-button:hover {
+        background-color: transparent;
+        border-color: transparent;
+    }
+
+    .game-control-button:active {
         background-color: var(--activeBtn);
+        border-color: var(--activeBtn);
+    }
+
+    #notes-button::after {
+        top: -5%;
+        left: 50%;
+        height: 20px;
+        font-size: 11px;
+    }
+
+    #notes-button.notes-on {
+        border: none;
+    }
+
+    #notes-button.notes-on:hover {
+        background-color: var(--buttonsBackgroundColor);
+    }
+
+    #notes-button.notes-on::after {
+        content: "ON";
+        background-color: var(--numberColor);
+    }
+
+    .numpad-item {
+        font-size: 36px;
     }
 
     #new-game-button {
