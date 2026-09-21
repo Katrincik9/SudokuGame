@@ -3,6 +3,7 @@ import { eraseSelectedCell, toggleNotesMode, undoOperation, enterNumber } from "
 import { createNewGame } from "./gridLayout.js";
 
 let intervalId = null;
+let isPaused = false;
 
 export function createControlButtons(app) {
     const controlsButtons = document.createElement("div");
@@ -44,58 +45,57 @@ function createTimerButton(timerSection) {
     const timerBtn = document.createElement("button");
     timerBtn.id = "timer-button";
     timerBtn.innerHTML = pauseIcon + playIcon;
-    timerBtn.addEventListener("click", (event) => toggleTimer(event.currentTarget))
+    timerBtn.addEventListener("click", () => toggleTimer())
     timerSection.appendChild(timerBtn);
 }
 
-export function toggleTimer(timer) {
-    timer.classList.toggle("paused");  
+export function toggleTimer() {
+    isPaused = !isPaused;
+    updatePauseState();
+}
+
+function updatePauseState() {
     const board = document.getElementById("sudoku-board");
-    board.classList.toggle("hidden")  
-    if (timer.classList.contains("paused")) {
-        pauseTime()
+    const timer = document.getElementById("timer-button");
+    if (isPaused) {
+        pauseTimer();
+        timer.classList.add("paused");
+        board.classList.add("hidden");
     } else {
-        incrementTime()
+        startTimer();
+        timer.classList.remove("paused");
+        board.classList.remove("hidden");
     }
 }
 
-function incrementTime() {
+function startTimer() {
     intervalId = setInterval(() => {
-    const timerSpan = document.getElementById("timer-span");
-    let time = timerSpan.textContent.split(':');
-    let minutes = Number(time[0]);
-    let seconds = Number(time[1]);
-    seconds++;
-    if (seconds > 59) {
-        minutes++;
-        seconds = 0; 
-    }
-
-    if (seconds < 10) {
-        seconds = "0" + seconds;
-    }
-    if (minutes < 10) {
-        minutes = "0" + minutes;
-    }
-    time = minutes + ":" + seconds;
-    timerSpan.textContent = time;
-}, 1000)
+        const timerSpan = document.getElementById("timer-span");
+        let time = timerSpan.textContent.split(':');
+        let minutes = Number(time[0]);
+        let seconds = Number(time[1]);
+        seconds++;
+        if (seconds > 59) {
+            minutes++;
+            seconds = 0;
+        }
+        seconds = seconds.toString().padStart(2, "0")
+        minutes = minutes.toString().padStart(2, "0")
+        time = `${minutes}:${seconds}`;
+        timerSpan.textContent = time;
+    }, 1000)
 }
 
-function pauseTime() {
+function pauseTimer() {
     clearInterval(intervalId);
-    intervalId = null;
 }
 
-export function startNewTime() {
-    pauseTime()
+export function resetTimer() {
+    pauseTimer();
+    isPaused = false; 
     const timerSpan = document.getElementById("timer-span");
-    timerSpan.textContent = "00:00"
-    const board = document.getElementById("sudoku-board");
-    board.classList.remove("hidden");
-    const timerBtn = document.getElementById("timer-button");
-    timerBtn.classList.remove("paused")
-    incrementTime()
+    timerSpan.textContent = "00:00";
+    updatePauseState();
 }
 
 const buttons = [
@@ -123,7 +123,7 @@ function createActionButtons(controlsButtons) {
 
     buttons.forEach((button) => {
         const actionBtn = createButton(button.id, button.icon);
-        actionBtn.addEventListener("click", (event) => {button.function(event.currentTarget)})
+        actionBtn.addEventListener("click", (event) => { button.function(event.currentTarget) })
         gameControlsButtons.appendChild(actionBtn);
     });
 }
@@ -146,10 +146,10 @@ function createNumpad(controlsButtons) {
         }
         const number = event.target.id.split("-")[1];
         enterNumber(number);
-    }) 
+    })
     controlsButtons.appendChild(numpad);
 
-    for (let index=1; index<=9; index++){
+    for (let index = 1; index <= 9; index++) {
         const numpadItem = document.createElement("button");
         numpadItem.classList.add("numpad-item");
         numpadItem.id = "numpad-" + index;
@@ -162,7 +162,7 @@ function createNewGameButton(controlsButtons) {
     const newGameBtn = document.createElement("button");
     newGameBtn.id = "new-game-button";
     newGameBtn.innerText = "New Game";
-    newGameBtn.addEventListener("click", (event) => {createNewGame(event.target)})
+    newGameBtn.addEventListener("click", (event) => { createNewGame(event.target) })
     controlsButtons.appendChild(newGameBtn);
 }
 
