@@ -90,6 +90,70 @@ body {
     width: 13%;
 }
 
+#app.game-won #sudoku-board .board-cell > div {
+    display: none;
+}
+
+#app.game-won #sudoku-board .board-cell {
+    background-color: #fff;
+}
+
+#app.game-won #timer-button .pause-icon {
+    display: none;
+}
+
+#app.game-won #timer-button .play-icon {
+    display: block;
+}
+
+#app.game-won #timer-section, #app.game-won #game-control-buttons, #app.game-won #numpad {
+    pointer-events: none;
+}
+
+#win-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    z-index: 1;
+    pointer-events: none;
+}
+
+#win-overlay img {
+    position: absolute;
+    opacity: 0;
+    transition: opacity 2s;
+}
+
+#win-message {
+    position: absolute;
+    text-align: center;
+    font-family: "Hauss-Bold";
+    background-color: #fff;
+    border-radius: 28px;
+    box-shadow: 0 12px 30px var(--gridLightBorder);
+    padding: 26px;
+    opacity: 0;
+    transition: opacity 2s;
+}
+
+.game-won #win-overlay img, .game-won #win-message {
+    opacity: 1;
+}
+
+#win-label {
+    margin: 0;
+    font-size: 46px;
+    color: var(--numberColor);
+}
+
+#win-timer-label {
+    margin: 0;
+    font-size: 14px;
+    color: var(--noteColor)
+}
+
 .board-cell {
     display: grid;
     place-items: center;
@@ -496,5 +560,17 @@ body {
 
     #new-game-button {
         display: none;
+    }
+
+    #win-message {
+        padding: 16px;
+    }
+
+    #win-label {
+        font-size: clamp(28px, 10.5cqw, 46px);
+    }
+
+    #win-timer-label {
+        font-size: clamp(12px, 3.5cqw, 14px);
     }
 }

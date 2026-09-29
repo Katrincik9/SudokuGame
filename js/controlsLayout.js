@@ -94,7 +94,7 @@ function startTimer() {
     }, 1000)
 }
 
-function pauseTimer() {
+export function pauseTimer() {
     clearInterval(intervalId);
 }
 

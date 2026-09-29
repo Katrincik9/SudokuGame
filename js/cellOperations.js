@@ -1,3 +1,4 @@
+import { pauseTimer } from "./controlsLayout.js";
 import history from "./history.js";
 
 let selectedCell = null;
@@ -11,6 +12,22 @@ export function resetGameState() {
     notesOn = false; 
     mapOfConflicts.clear();
     history.clearHistory()
+}
+
+export function checkWinState() {
+    const app = document.getElementById("app");
+    const cells = document.querySelectorAll(".board-cell");
+    for (const cell of cells) {
+        if (!cell.querySelector(".cell-value").textContent || cell.classList.contains("conflict")) {
+            return;
+        }
+    }
+
+    setTimeout(() => app.classList.add("game-won"), 1000);
+    const winTimerLabel = document.getElementById("win-timer-label");
+    const timer = document.getElementById("timer-span").textContent;
+    winTimerLabel.textContent = `Time: ${timer}`;
+    pauseTimer();
 }
 
 document.addEventListener("keydown", (event) => {
@@ -165,6 +182,7 @@ export function enterNumber(number) {
     highlightCells(selectedCell);
     removeConflicts(selectedCell);
     checkConflicts(selectedCell);
+    checkWinState();
 }
 
 function getCurrentCellData(selectedCellValueElement, selectedCellNoteElements) {

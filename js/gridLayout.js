@@ -7,11 +7,24 @@ import { resetTimer } from "./controlsLayout.js";
 function generatePuzzle() {
     const generatedPuzzle = window.sudoku.generate("easy");
     const generatedPuzzleGrid = window.sudoku.board_string_to_grid(generatedPuzzle);
+    // const generatedPuzzleGrid = [
+    //     [".", "3", "4", "6", "7", "8", "9", "1", "2"],
+    //     ["6", "7", "2", "1", "9", "5", "3", "4", "8"],
+    //     ["1", "9", "8", "3", "4", "2", "5", "6", "7"],
+    //     ["8", "5", "9", "7", "6", "1", "4", "2", "3"],
+    //     ["4", "2", "6", "8", "5", "3", "7", "9", "1"],
+    //     ["7", "1", "3", "9", "2", "4", "8", "5", "6"],
+    //     ["9", "6", "1", "5", "3", "7", "2", "8", "4"],
+    //     ["2", "8", "7", "4", "1", "9", "6", "3", "5"],
+    //     ["3", "4", "5", "2", "8", "6", "1", "7", "9"]
+    // ];
 
     return generatedPuzzleGrid
 }
 
 export function createNewGame() {
+    const app = document.getElementById("app");
+    app.classList.remove("game-won");
     const cells = document.querySelectorAll(".board-cell")
     const newPuzzle = generatePuzzle();
     for (const cell of cells) {
@@ -57,7 +70,8 @@ export function createGrid(app) {
         }
     }
 
-    createPauseOverlay(board)
+    createPauseOverlay(board);
+    createWinOverlay(board);
 }
 
 function createPauseOverlay(board) {
@@ -69,6 +83,35 @@ function createPauseOverlay(board) {
         toggleTimer(timerBtn);
     })
     board.appendChild(pauseOverlay);
+}
+
+function createWinOverlay(board) {
+    const winOverlay = document.createElement("div");
+    winOverlay.id = "win-overlay";
+    const confettiImage = document.createElement("img");
+    confettiImage.src = "./images/Confetti.svg";
+    confettiImage.alt = "Confetti";
+    winOverlay.appendChild(confettiImage);
+    
+    const winMessage = createWinMessage(winOverlay);
+    winOverlay.appendChild(winMessage);
+    board.appendChild(winOverlay);
+}
+
+function createWinMessage() {
+    const winMessage = document.createElement("div");
+    winMessage.id = "win-message";
+    
+    const winLabel = document.createElement("p");
+    winLabel.id = "win-label";
+    winLabel.textContent = "You Win!";
+    winMessage.appendChild(winLabel);
+    
+    const winTimerLabel = document.createElement("p");
+    winTimerLabel.id = "win-timer-label";
+    winMessage.appendChild(winTimerLabel);
+
+    return winMessage;
 }
 
 function createBoard() {
