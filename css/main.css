@@ -65,15 +65,15 @@ body {
     pointer-events: none;
 }
 
-#sudoku-board.hidden .board-cell > div {
+#app.game-paused #sudoku-board .board-cell > div {
     display: none;
 }
 
-#sudoku-board.hidden .board-cell {
+#app.game-paused #sudoku-board .board-cell {
     background-color: #fff;
 }
 
-#sudoku-board.hidden #pause-overlay {
+#app.game-paused #sudoku-board #pause-overlay {
     display: grid;
     place-items: center;
 }
@@ -230,11 +230,11 @@ body {
     display: none;
 }
 
-#timer-button.paused .pause-icon {
+#app.game-paused #timer-button .pause-icon {
     display: none;
 }
 
-#timer-button.paused .play-icon {
+#app.game-paused #timer-button .play-icon {
     display: block;
 }
 
@@ -328,6 +328,10 @@ body {
     font-family: "Hauss", sans-serif;
 }
 
+.numpad-item:hover {
+    background-color: var(--hoverBtn);
+}
+
 .numpad-item:active {
     background-color: var(--activeBtn);
 }
@@ -353,10 +357,6 @@ body {
         background-color: var(--buttonsBackgroundColor);
         font-size: 42px;
     }
-
-    .numpad-item:hover {
-        background-color: #fff;
-    } 
 }
 
 @media (max-width: 900px) {
@@ -394,6 +394,14 @@ body {
         background-color: transparent;
         font-size: 52px;
     }  
+
+    .numpad-item:hover {
+        background-color: #fff;
+    } 
+
+    .numpad-item:active {
+        background-color: var(--activeBtn);
+    }
 
     #new-game-button {
         display: none;

@@ -54,17 +54,25 @@ export function toggleTimer() {
     updatePauseState();
 }
 
+export function resumeGame(app) {
+    app.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (isPaused && button && button.id !== "new-game-button") {
+            event.stopPropagation();
+            isPaused = false;
+            updatePauseState();
+        }
+    }, true)
+}
+
 function updatePauseState() {
-    const board = document.getElementById("sudoku-board");
-    const timer = document.getElementById("timer-button");
+    const app = document.getElementById("app");
     if (isPaused) {
         pauseTimer();
-        timer.classList.add("paused");
-        board.classList.add("hidden");
+        app.classList.add("game-paused");
     } else {
         startTimer();
-        timer.classList.remove("paused");
-        board.classList.remove("hidden");
+        app.classList.remove("game-paused");
     }
 }
 
