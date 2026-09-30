@@ -54,15 +54,13 @@ export function toggleTimer() {
     updatePauseState();
 }
 
-export function resumeGame(app) {
-    app.addEventListener("click", (event) => {
-        const button = event.target.closest("button");
-        if (isPaused && button && button.id !== "new-game-button") {
-            event.stopPropagation();
-            isPaused = false;
-            updatePauseState();
-        }
-    }, true)
+export function blockButtonActionsWhilePaused(event) {
+    const button = event.target.closest("button");
+    if (isPaused && button && button.id !== "new-game-button") {
+        event.stopPropagation();
+        isPaused = false;
+        updatePauseState();
+    }
 }
 
 function updatePauseState() {
@@ -70,9 +68,11 @@ function updatePauseState() {
     if (isPaused) {
         pauseTimer();
         app.classList.add("game-paused");
+        app.addEventListener("click", blockButtonActionsWhilePaused, true);
     } else {
         startTimer();
         app.classList.remove("game-paused");
+        app.removeEventListener("click", blockButtonActionsWhilePaused, true);
     }
 }
 
