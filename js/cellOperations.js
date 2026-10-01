@@ -1,5 +1,6 @@
 import { pauseTimer } from "./controlsLayout.js";
 import history from "./history.js";
+import { checkProgress } from "./startFrozenChallenge.js";
 
 let selectedCell = null;
 let notesOn = false; 
@@ -182,6 +183,7 @@ export function enterNumber(number) {
     highlightCells(selectedCell);
     removeConflicts(selectedCell);
     checkConflicts(selectedCell);
+    if (window.frozenChallenge === true) checkProgress();
     checkWinState();
 }
 
@@ -254,6 +256,7 @@ export function eraseSelectedCell() {
     highlightCells(selectedCell);
     removeConflicts(selectedCell);
     checkConflicts(selectedCell);
+    if (window.frozenChallenge === true) checkProgress();
 }
 
 export function toggleNotesMode(button) {
@@ -288,5 +291,6 @@ export function undoOperation() {
     chooseCell(cell);
     removeConflicts(cell);
     checkConflicts(cell);
+    if (window.frozenChallenge === true) checkProgress();
 }
 

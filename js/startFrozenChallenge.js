@@ -16,16 +16,21 @@ export function checkCellForFreeze() {
         const boxCells = document.querySelectorAll(`.board-cell.changed[data-box='${cellBox}']`)
         console.log(boxCells)
         const taskType = []
-        
-        if (rowCells.length > 2) {
+
+        const minRequiredCellsToFill = 2;
+        const maxRequiredCellsToFill = 4;
+        const requiredCellsToFill = Math.floor(Math.random() * (maxRequiredCellsToFill - minRequiredCellsToFill) + minRequiredCellsToFill + 1)
+        console.log(requiredCellsToFill)
+
+        if (rowCells.length > requiredCellsToFill) {
             taskType.push("row")
         } 
         
-        if (columnCells.length > 2) {
+        if (columnCells.length > requiredCellsToFill) {
             taskType.push("column")
         } 
         
-        if (boxCells.length > 2) {
+        if (boxCells.length > requiredCellsToFill) {
             taskType.push("box")
         }
 
@@ -34,17 +39,39 @@ export function checkCellForFreeze() {
         if (taskType.length === 0) {
             continue;
         } 
-
+        
         const randomTaskType = taskType[Math.floor(Math.random() * taskType.length)];
-        const filledCells = 0;
+        cell.dataset.taskType = randomTaskType;
+        cell.dataset.taskRegionNumber = cell.dataset[randomTaskType];
+        cell.dataset.taskRequiredCells = requiredCellsToFill;
         console.log(randomTaskType);
         console.log(cell);
         cell.classList.add("frozen");
         const taskDescriptionLabel = document.createElement("label");
         taskDescriptionLabel.classList.add("task-label")
-        taskDescriptionLabel.textContent = `Fill 2 cells in this cell's ${randomTaskType} to melt the ice. Progress: ${filledCells} / 2`;
+        taskDescriptionLabel.textContent = `Fill ${requiredCellsToFill} cells in this cell's ${randomTaskType} to melt the ice. Progress: 0 / ${requiredCellsToFill}`;
         cell.append(taskDescriptionLabel);
+        
         return;
+    }
+}
+
+export function checkProgress() {
+    const frozenCell = document.querySelector(".board-cell.frozen");
+    if (!frozenCell) return;
+    
+    const targetRegionCells = [...document.querySelectorAll(`.board-cell.changed[data-${frozenCell.dataset.taskType}='${frozenCell.dataset.taskRegionNumber}']`)];
+    const validFilledCells = targetRegionCells.filter(cell => 
+        cell.querySelector(".cell-value").textContent !== "" && !cell.classList.contains("conflict")
+    );
+
+    const frozenCellTaskLabel = document.querySelector(".board-cell.frozen .task-label");
+    frozenCellTaskLabel.textContent = `Fill ${frozenCell.dataset.taskRequiredCells} cells in this 
+        cell's ${frozenCell.dataset.taskType} to melt the ice. 
+        Progress: ${validFilledCells.length} / ${frozenCell.dataset.taskRequiredCells}`;
+
+    if (validFilledCells.length >= Number(frozenCell.dataset.taskRequiredCells)) {
+        frozenCell.classList.remove("frozen");
     }
 }
 
