@@ -164,7 +164,7 @@ function removeConflicts(cell) {
 }
 
 export function enterNumber(number) {
-    if (!selectedCell || selectedCell.classList.contains("fixed")) {
+    if (!selectedCell || selectedCell.classList.contains("fixed") || selectedCell.classList.contains("frozen")) {
         return
     } 
 

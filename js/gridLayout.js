@@ -3,6 +3,7 @@ import { resetGameState } from "./cellOperations.js";
 import { pauseIconBoard } from "./icons.js";
 import { toggleTimer } from "./controlsLayout.js";
 import { resetTimer } from "./controlsLayout.js";
+import { checkCellForFreeze } from "./startFrozenChallenge.js";
 
 window.testPuzzle = false;
 
@@ -38,10 +39,11 @@ export function createNewGame() {
     resetGameState()
     chooseCell(cells[0])
     resetTimer()
+    if (window.frozenChallenge === true) checkCellForFreeze();
 }
 
 function resetCellState(cell) {
-    cell.classList.remove("fixed", "same-value", "highlighted", "selected", "conflict", "changed")
+    cell.classList.remove("fixed", "same-value", "highlighted", "selected", "conflict", "changed", "frozen")
     const cellValue = cell.querySelector(".cell-value")
     cellValue.textContent = ""
     const cellNotes = cell.querySelectorAll(".note")

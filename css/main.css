@@ -52,6 +52,7 @@ body {
     height: 100%;
     left: 33%;   
     pointer-events: none;
+    z-index: 1;
 }
 
 #sudoku-board::before {
@@ -63,6 +64,7 @@ body {
     width: 100%;
     top: 33%;
     pointer-events: none;
+    z-index: 1;
 }
 
 #app.game-paused #sudoku-board .board-cell > div {
@@ -116,7 +118,7 @@ body {
     height: 100%;
     display: grid;
     place-items: center;
-    z-index: 1;
+    z-index: 2;
     pointer-events: none;
 }
 
@@ -229,6 +231,28 @@ body {
 
 .board-cell.fixed .cell-notes {
     display: none;
+}
+
+.board-cell.frozen {
+    position: relative;
+    background-color: #48a9f3;
+}
+
+.board-cell.frozen:hover .task-label {
+    display: block;
+}
+
+.task-label {
+    display: none;
+    position: absolute;
+    width: max-content;
+    padding: 10%;
+    border-radius: 20px;
+    bottom: 120%;
+    font-size: 18px;
+    font-family: "Hauss-Bold";
+    background-color: var(--gridLightBorder);
+    z-index: 2;
 }
 
 .cell-notes {
