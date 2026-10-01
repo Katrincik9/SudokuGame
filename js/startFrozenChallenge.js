@@ -1,4 +1,4 @@
-window.frozenChallenge = false; 
+window.frozenChallenge = true; 
 
 export function checkCellForFreeze() {
     const editableCells = shuffleArray([...document.querySelectorAll(".board-cell.changed")]);
@@ -9,38 +9,45 @@ export function checkCellForFreeze() {
         const cellColumn = cell.dataset.column;
         const cellBox = cell.dataset.box;
 
-        const rowCells = document.querySelectorAll(`.board-cell.changed[data-row='${cellRow}']`)
-        console.log(rowCells)
-        const columnCells = document.querySelectorAll(`.board-cell.changed[data-column='${cellColumn}']`)
-        console.log(columnCells)
-        const boxCells = document.querySelectorAll(`.board-cell.changed[data-box='${cellBox}']`)
-        console.log(boxCells)
-        const taskType = []
+        const nrOfEditableCellsFromRow = document.querySelectorAll(`.board-cell.changed[data-row='${cellRow}']`).length - 1;
+        const nrOfEditableCellsFromColumn = document.querySelectorAll(`.board-cell.changed[data-column='${cellColumn}']`).length - 1;
+        const nrOfEditableCellsFromBox = document.querySelectorAll(`.board-cell.changed[data-box='${cellBox}']`).length - 1;
+
+        const possibleTaskTypes = []
 
         const minRequiredCellsToFill = 2;
-        const maxRequiredCellsToFill = 4;
-        const requiredCellsToFill = Math.floor(Math.random() * (maxRequiredCellsToFill - minRequiredCellsToFill) + minRequiredCellsToFill + 1)
-        console.log(requiredCellsToFill)
+        let maxRequiredCellsToFill;
 
-        if (rowCells.length > requiredCellsToFill) {
-            taskType.push("row")
+        if (nrOfEditableCellsFromRow >= minRequiredCellsToFill) {
+            possibleTaskTypes.push("row")
         } 
         
-        if (columnCells.length > requiredCellsToFill) {
-            taskType.push("column")
+        if (nrOfEditableCellsFromColumn >= minRequiredCellsToFill) {
+            possibleTaskTypes.push("column")
         } 
         
-        if (boxCells.length > requiredCellsToFill) {
-            taskType.push("box")
+        if (nrOfEditableCellsFromBox >= minRequiredCellsToFill) {
+            possibleTaskTypes.push("box")
         }
 
-        console.log(taskType)
+        console.log(possibleTaskTypes)
 
-        if (taskType.length === 0) {
+        if (possibleTaskTypes.length === 0) {
             continue;
         } 
-        
-        const randomTaskType = taskType[Math.floor(Math.random() * taskType.length)];
+
+        const randomTaskType = possibleTaskTypes[Math.floor(Math.random() * possibleTaskTypes.length)];
+        if (randomTaskType === "row") {
+            maxRequiredCellsToFill = Math.min(4, nrOfEditableCellsFromRow)
+        } else if (randomTaskType === "column") {
+            maxRequiredCellsToFill = Math.min(4, nrOfEditableCellsFromColumn)
+        } else if (randomTaskType === "box") {
+            maxRequiredCellsToFill = Math.min(4, nrOfEditableCellsFromBox)
+        }
+
+        const requiredCellsToFill = Math.floor(Math.random() * (maxRequiredCellsToFill - minRequiredCellsToFill + 1) + minRequiredCellsToFill)
+        console.log(requiredCellsToFill)
+
         cell.dataset.taskType = randomTaskType;
         cell.dataset.taskRegionNumber = cell.dataset[randomTaskType];
         cell.dataset.taskRequiredCells = requiredCellsToFill;
