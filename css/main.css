@@ -233,11 +233,15 @@ body {
     display: none;
 }
 
-.board-cell.frozen {
+.board-cell.frozen, .board-cell.breaking {
     position: relative;
-    background-image: url(/images/ice-cube.png);
+    background-image: url(/images/ice-cube-first-frame.png);
     background-size: 160%;
     background-position: center;
+}
+
+.board-cell.breaking {
+    background-image: url("/images/ice-cube-break.gif");
 }
 
 .board-cell.frozen:hover .frozen-cell-task-info {

@@ -141,9 +141,15 @@ export function checkProgress() {
 
         if (currentProgress >= nrOfRequiredCells) {
             frozenCell.classList.remove("frozen");
+            frozenCell.classList.add("breaking");
+
             frozenCellTaskInfo.remove();
             delete frozenCell.dataset.taskType
             delete frozenCell.dataset.taskRequiredCells
+
+            setTimeout(() => {
+                frozenCell.classList.remove("breaking");
+            }, 1500)
         }
     }
 }
