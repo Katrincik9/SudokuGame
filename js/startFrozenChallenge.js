@@ -1,4 +1,6 @@
-window.frozenChallenge = true; 
+import { snowflakeIcon } from "./icons.js";
+
+window.frozenChallenge = false; 
 
 const minRequiredCellsToFill = 2;
 
@@ -42,10 +44,47 @@ function initializeFrozenCell(cell, taskType, requiredCells) {
     cell.dataset.taskType = taskType;
     cell.dataset.taskRequiredCells = requiredCells;
 
-    const taskLabel = document.createElement("label");
-    taskLabel.classList.add("task-label")
-    taskLabel.textContent = `Fill ${requiredCells} cells in this cell's ${taskType} to melt the ice. Progress: 0 / ${requiredCells}`;
-    cell.append(taskLabel);
+    const frozenCellInfo = createFrozenCellInfo(taskType, requiredCells);
+    cell.append(frozenCellInfo);
+}
+
+function createFrozenCellInfo(taskType, requiredCells) {
+    const frozenCellTaskInfo = document.createElement("div");
+    frozenCellTaskInfo.classList.add("frozen-cell-task-info");
+    
+    const taskHeader = createTaskHeader();
+    const taskBody = createTaskBody(taskType, requiredCells)
+    
+    frozenCellTaskInfo.append(taskHeader, taskBody);
+    return frozenCellTaskInfo;
+}
+
+function createTaskHeader() {
+    const taskHeader = document.createElement("div");
+    taskHeader.classList.add("task-header");  
+    taskHeader.innerHTML = snowflakeIcon;
+
+    const taskTitle = document.createElement("p");
+    taskTitle.textContent = "Frozen Cell";
+
+    taskHeader.append(taskTitle);
+    return taskHeader
+}
+
+function createTaskBody(taskType, requiredCells) {
+    const taskBody = document.createElement("div");
+    taskBody.classList.add("task-body");
+
+    const taskDescription = document.createElement("p");
+    taskDescription.classList.add("task-description")
+    taskDescription.textContent = `Fill ${requiredCells} cells in this ${taskType}`;
+    
+    const taskProgress = document.createElement("p")
+    taskProgress.classList.add("task-progress")
+    taskProgress.textContent = `Progress: 0 / ${requiredCells}`;
+
+    taskBody.append(taskDescription, taskProgress);
+    return taskBody
 }
 
 function getNrOfAvailableCellsPerRegion(cell, regionType) {
@@ -95,23 +134,22 @@ export function checkProgress() {
             cell.querySelector(".cell-value").textContent !== "" && !cell.classList.contains("conflict")
         );
         const currentProgress = validFilledCells.length;
-        const frozenCellTaskLabel = frozenCell.querySelector(".task-label");
+        const frozenCellTaskInfo = frozenCell.querySelector(".frozen-cell-task-info");
+        const frozenCellTaskProgress = frozenCell.querySelector(".task-progress");
 
-        updateTaskLabel(frozenCellTaskLabel, taskRegion, nrOfRequiredCells, currentProgress)
+        updateTaskProgress(frozenCellTaskProgress, currentProgress, nrOfRequiredCells);
 
         if (currentProgress >= nrOfRequiredCells) {
             frozenCell.classList.remove("frozen");
-            frozenCellTaskLabel.remove();
+            frozenCellTaskInfo.remove();
             delete frozenCell.dataset.taskType
             delete frozenCell.dataset.taskRequiredCells
         }
     }
 }
 
-function updateTaskLabel(frozenCellTaskLabel, taskRegion, nrOfRequiredCells, currentProgress) {
-    frozenCellTaskLabel.textContent = `Fill ${nrOfRequiredCells} cells in this 
-        cell's ${taskRegion} to melt the ice. 
-        Progress: ${currentProgress} / ${nrOfRequiredCells}`;
+function updateTaskProgress(taskProgress, currentProgress, nrOfRequiredCells) {
+    taskProgress.textContent = `Progress: ${currentProgress} / ${nrOfRequiredCells}`;
 }
 
 function shuffleArray(array) {

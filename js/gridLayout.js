@@ -50,8 +50,8 @@ function resetCellState(cell) {
     for (const note of cellNotes) {
         note.textContent = ""
     }
-    const taskLabel = cell.querySelector(".task-label")
-    if (taskLabel) taskLabel.remove()
+    const frozenCellTaskInfo = cell.querySelector(".frozen-cell-task-info");
+    if (frozenCellTaskInfo) frozenCellTaskInfo.remove()
     delete cell.dataset.taskType
     delete cell.dataset.taskRequiredCells
 }
