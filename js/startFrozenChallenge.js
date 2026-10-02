@@ -1,24 +1,40 @@
-window.frozenChallenge = false; 
+window.frozenChallenge = true; 
 
 const minRequiredCellsToFill = 2;
 
 export function checkCellForFreeze() {
     const editableCells = shuffleArray([...document.querySelectorAll(".board-cell.changed")]);
+    let frozenCells = 0;
 
     for (const cell of editableCells) {
         const possibleTaskTypes = getPossibleTaskTypes(cell)
-        
         if (possibleTaskTypes.length === 0) {
             continue;
         } 
+        if (breakExistingFrozenTasks(cell)) continue;
 
         const randomTaskType = possibleTaskTypes[Math.floor(Math.random() * possibleTaskTypes.length)];
         const requiredCellsToFill = getRequiredCellsToFill(cell, randomTaskType);
-        
         initializeFrozenCell(cell, randomTaskType, requiredCellsToFill)
-        
-        return;
+        frozenCells++; 
+
+        if (frozenCells === 3) return;
     }
+}
+
+function breakExistingFrozenTasks(possibleFrozenCell) {
+    const frozenCells = document.querySelectorAll(".board-cell.frozen")
+    for (const frozenCell of frozenCells) {
+        const frozenCellTaskType = frozenCell.dataset.taskType
+        const frozenCellRegionNr = frozenCell.dataset[frozenCellTaskType]
+        const frozenCellRequiredCells = Number(frozenCell.dataset.taskRequiredCells)
+    
+        if (possibleFrozenCell.dataset[frozenCellTaskType] === frozenCellRegionNr) {
+            const nrOfAvailableCells = getNrOfAvailableCellsPerRegion(possibleFrozenCell, frozenCellTaskType)
+            if (nrOfAvailableCells < frozenCellRequiredCells) return true
+        }
+    }
+    return false
 }
 
 function initializeFrozenCell(cell, taskType, requiredCells) {
@@ -34,7 +50,7 @@ function initializeFrozenCell(cell, taskType, requiredCells) {
 
 function getNrOfAvailableCellsPerRegion(cell, regionType) {
     const regionNumber = cell.dataset[regionType];
-    const availableCells = document.querySelectorAll(`.board-cell.changed[data-${regionType}='${regionNumber}']`);
+    const availableCells = [...document.querySelectorAll(`.board-cell.changed[data-${regionType}='${regionNumber}']`)].filter(cell => !cell.classList.contains("frozen"));
     const nrOfAvailableCells = availableCells.length - 1;
 
     return nrOfAvailableCells
@@ -69,23 +85,26 @@ function getRequiredCellsToFill(cell, taskType) {
 }
 
 export function checkProgress() {
-    const frozenCell = document.querySelector(".board-cell.frozen");
-    if (!frozenCell) return;
+    const frozenCells = document.querySelectorAll(".board-cell.frozen");
     
-    const taskRegion = frozenCell.dataset.taskType;
-    const nrOfRequiredCells = Number(frozenCell.dataset.taskRequiredCells)
-    const targetRegionCells = [...document.querySelectorAll(`.board-cell.changed[data-${taskRegion}='${frozenCell.dataset[taskRegion]}']`)];
-    const validFilledCells = targetRegionCells.filter(cell => 
-        cell.querySelector(".cell-value").textContent !== "" && !cell.classList.contains("conflict")
-    );
-    const currentProgress = validFilledCells.length;
-    const frozenCellTaskLabel = document.querySelector(".board-cell.frozen .task-label");
+    for (const frozenCell of frozenCells) {
+        const taskRegion = frozenCell.dataset.taskType;
+        const nrOfRequiredCells = Number(frozenCell.dataset.taskRequiredCells)
+        const targetRegionCells = [...document.querySelectorAll(`.board-cell.changed[data-${taskRegion}='${frozenCell.dataset[taskRegion]}']`)];
+        const validFilledCells = targetRegionCells.filter(cell => 
+            cell.querySelector(".cell-value").textContent !== "" && !cell.classList.contains("conflict")
+        );
+        const currentProgress = validFilledCells.length;
+        const frozenCellTaskLabel = frozenCell.querySelector(".task-label");
 
-    updateTaskLabel(frozenCellTaskLabel, taskRegion, nrOfRequiredCells, currentProgress)
+        updateTaskLabel(frozenCellTaskLabel, taskRegion, nrOfRequiredCells, currentProgress)
 
-    if (validFilledCells.length >= nrOfRequiredCells) {
-        frozenCell.classList.remove("frozen");
-        frozenCellTaskLabel.remove();
+        if (currentProgress >= nrOfRequiredCells) {
+            frozenCell.classList.remove("frozen");
+            frozenCellTaskLabel.remove();
+            delete frozenCell.dataset.taskType
+            delete frozenCell.dataset.taskRequiredCells
+        }
     }
 }
 
