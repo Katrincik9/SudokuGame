@@ -1,6 +1,6 @@
 import { pauseTimer } from "./controlsLayout.js";
 import history from "./history.js";
-import { checkProgress } from "./startFrozenChallenge.js";
+import { checkProgress } from "./frozenChallenge.js";
 
 let selectedCell = null;
 let notesOn = false; 

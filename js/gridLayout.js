@@ -3,7 +3,7 @@ import { resetGameState } from "./cellOperations.js";
 import { pauseIconBoard } from "./icons.js";
 import { toggleTimer } from "./controlsLayout.js";
 import { resetTimer } from "./controlsLayout.js";
-import { checkCellForFreeze } from "./startFrozenChallenge.js";
+import { checkCellForFreeze } from "./frozenChallenge.js";
 
 window.testPuzzle = false;
 
