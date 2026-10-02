@@ -50,6 +50,10 @@ function resetCellState(cell) {
     for (const note of cellNotes) {
         note.textContent = ""
     }
+    const taskLabel = cell.querySelector(".task-label")
+    if (taskLabel) taskLabel.remove()
+    delete cell.dataset.taskType
+    delete cell.dataset.taskRequiredCells
 }
 
 function populateCellWithPuzzle(cell, newPuzzle) {
