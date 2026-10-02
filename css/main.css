@@ -235,7 +235,9 @@ body {
 
 .board-cell.frozen {
     position: relative;
-    background-color: #48a9f3;
+    background-image: url(/images/ice-cube.png);
+    background-size: 160%;
+    background-position: center;
 }
 
 .board-cell.frozen:hover .frozen-cell-task-info {
