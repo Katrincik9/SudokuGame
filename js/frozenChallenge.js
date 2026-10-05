@@ -6,25 +6,25 @@ const minRequiredCellsToFill = 2;
 
 export function checkCellForFreeze() {
     const editableCells = shuffleArray([...document.querySelectorAll(".board-cell:not(.fixed)")]);
-    let frozenCells = 0;
+    let frozenCellCount = 0;
 
     for (const cell of editableCells) {
         const possibleTaskTypes = getPossibleTaskTypes(cell)
         if (possibleTaskTypes.length === 0) {
             continue;
         } 
-        if (breakExistingFrozenTasks(cell)) continue;
+        if (canBreakExistingFrozenTasks(cell)) continue;
 
         const randomTaskType = possibleTaskTypes[Math.floor(Math.random() * possibleTaskTypes.length)];
         const requiredCellsToFill = getRequiredCellsToFill(cell, randomTaskType);
         initializeFrozenCell(cell, randomTaskType, requiredCellsToFill)
-        frozenCells++; 
+        frozenCellCount++; 
 
-        if (frozenCells === 3) return;
+        if (frozenCellCount === 3) return;
     }
 }
 
-function breakExistingFrozenTasks(possibleFrozenCell) {
+function canBreakExistingFrozenTasks(possibleFrozenCell) {
     const frozenCells = document.querySelectorAll(".board-cell.frozen")
     for (const frozenCell of frozenCells) {
         const frozenCellTaskType = frozenCell.dataset.taskType
