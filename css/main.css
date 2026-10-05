@@ -173,7 +173,7 @@ body {
     background-color: #e2ebf3;
 }
 
-.board-cell.changed {
+.board-cell:not(.fixed) {
     color: #325aaf;
 }
 
@@ -185,7 +185,7 @@ body {
     background-color: var(--selectedCellColor);
 }
 
-.board-cell.changed.conflict{
+.board-cell:not(.fixed).conflict{
     color: #e55c6c;
 }
 

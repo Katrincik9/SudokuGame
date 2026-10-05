@@ -43,7 +43,7 @@ export function createNewGame() {
 }
 
 function resetCellState(cell) {
-    cell.classList.remove("fixed", "same-value", "highlighted", "selected", "conflict", "changed", "frozen")
+    cell.classList.remove("fixed", "same-value", "highlighted", "selected", "conflict", "frozen")
     const cellValue = cell.querySelector(".cell-value")
     cellValue.textContent = ""
     const cellNotes = cell.querySelectorAll(".note")
@@ -64,8 +64,6 @@ function populateCellWithPuzzle(cell, newPuzzle) {
     if (puzzleValue !== ".") {
         cellValue.textContent = puzzleValue
         cell.classList.add("fixed");
-    } else {
-        cell.classList.add("changed")
     }
 }
 

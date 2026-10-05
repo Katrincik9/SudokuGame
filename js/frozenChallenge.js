@@ -5,7 +5,7 @@ window.frozenChallenge = false;
 const minRequiredCellsToFill = 2;
 
 export function checkCellForFreeze() {
-    const editableCells = shuffleArray([...document.querySelectorAll(".board-cell.changed")]);
+    const editableCells = shuffleArray([...document.querySelectorAll(".board-cell:not(.fixed)")]);
     let frozenCells = 0;
 
     for (const cell of editableCells) {
@@ -89,7 +89,7 @@ function createTaskBody(taskType, requiredCells) {
 
 function getNrOfAvailableCellsPerRegion(cell, regionType) {
     const regionNumber = cell.dataset[regionType];
-    const availableCells = [...document.querySelectorAll(`.board-cell.changed[data-${regionType}='${regionNumber}']`)].filter(cell => !cell.classList.contains("frozen"));
+    const availableCells = [...document.querySelectorAll(`.board-cell:not(.fixed):not(.frozen)[data-${regionType}='${regionNumber}']`)];
     const nrOfAvailableCells = availableCells.length - 1;
 
     return nrOfAvailableCells
@@ -129,7 +129,7 @@ export function checkProgress() {
     for (const frozenCell of frozenCells) {
         const taskRegion = frozenCell.dataset.taskType;
         const nrOfRequiredCells = Number(frozenCell.dataset.taskRequiredCells)
-        const targetRegionCells = [...document.querySelectorAll(`.board-cell.changed[data-${taskRegion}='${frozenCell.dataset[taskRegion]}']`)];
+        const targetRegionCells = [...document.querySelectorAll(`.board-cell:not(.fixed)[data-${taskRegion}='${frozenCell.dataset[taskRegion]}']`)];
         const validFilledCells = targetRegionCells.filter(cell => 
             cell.querySelector(".cell-value").textContent !== "" && !cell.classList.contains("conflict")
         );
