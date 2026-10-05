@@ -32,6 +32,10 @@ export function checkWinState() {
 }
 
 document.addEventListener("keydown", (event) => {
+    const app = document.getElementById("app");
+    if (app.classList.contains("game-paused")) {
+        return;
+    }
     if (!selectedCell) return;
     const { row, column } = selectedCell.dataset;    
     let selectedRow = Number(row);

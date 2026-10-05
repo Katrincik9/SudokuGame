@@ -45,7 +45,7 @@ function createTimerButton(timerSection) {
     const timerBtn = document.createElement("button");
     timerBtn.id = "timer-button";
     timerBtn.innerHTML = pauseIcon + playIcon;
-    timerBtn.addEventListener("click", () => toggleTimer())
+    timerBtn.addEventListener("click", toggleTimer);
     timerSection.appendChild(timerBtn);
 }
 
@@ -170,7 +170,7 @@ function createNewGameButton(controlsButtons) {
     const newGameBtn = document.createElement("button");
     newGameBtn.id = "new-game-button";
     newGameBtn.innerText = "New Game";
-    newGameBtn.addEventListener("click", (event) => { createNewGame(event.target) })
+    newGameBtn.addEventListener("click", createNewGame)
     controlsButtons.appendChild(newGameBtn);
 }
 
